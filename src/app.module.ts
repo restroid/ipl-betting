@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BettorsController } from './bettors/bettors.controller';
-import { BettorsService } from './bettors/bettors.service';
-import { MatchController } from './match/match.controller';
-import { MatchService } from './match/match.service';
+import { BettorsModule } from './bettors/bettors.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController, BettorsController, MatchController],
-  providers: [AppService,BettorsService, MatchService],
+  imports: [AuthModule, BettorsModule],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
