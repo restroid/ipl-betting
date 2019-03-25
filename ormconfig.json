@@ -1,0 +1,10 @@
+{
+  "type": "mysql",
+  "host": "localhost",
+  "port": 3306,
+  "username": "scott",
+  "password": "tiger",
+  "database": "iplbetting",
+  "entities": ["src/**/**.entity{.ts,.js}"],
+  "synchronize": true
+}
