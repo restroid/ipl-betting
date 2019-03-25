@@ -11,15 +11,17 @@ export class BettorsController {
 
   @Get('all')
   @UseGuards(AuthGuard())
-  getAllUsers(): string[] {
-    return this.bettorsService.getAllUsers();
+  async getAllUsers(): Promise<string[]> {
+    var users = await this.bettorsService.findAll();
+    return users.map(u => u.name);
   }
 
   @Get('auth')
   @UseGuards(AuthGuard(), RolesGuard)
   @Roles('admin')
-  testAuth(@Request() req: any): string[] {
-    return this.bettorsService.getAllUsers();
+  async testAuth(@Request() req: any): Promise<string[]> {
+    var users = await this.bettorsService.findAll();
+    return users.map(u => u.name);
   }
 
   @UsePipes(ValidationPipe)
