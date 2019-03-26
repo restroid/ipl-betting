@@ -4,6 +4,7 @@ import { CreateBettorDto } from './dto/create-bettor-dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { Bettor } from 'dist/bettors/bettors.entity';
 
 @Controller('bettors')
 export class BettorsController {
@@ -11,23 +12,21 @@ export class BettorsController {
 
   @Get('all')
   @UseGuards(AuthGuard())
-  async getAllUsers(): Promise<string[]> {
-    var users = await this.bettorsService.findAll();
-    return users.map(u => u.name);
+  async getAllUsers(): Promise<Bettor[]> {
+    return await this.bettorsService.findAll();
   }
 
   @Get('auth')
   @UseGuards(AuthGuard(), RolesGuard)
   @Roles('admin')
-  async testAuth(@Request() req: any): Promise<string[]> {
-    var users = await this.bettorsService.findAll();
-    return users.map(u => u.name);
+  async testAuth(@Request() req: any): Promise<Bettor[]> {
+    return await this.bettorsService.findAll();
   }
 
   @UsePipes(ValidationPipe)
   @Post('register')
   async create(@Body() user: CreateBettorDto) {
     this.bettorsService.validateUser(user);
-    return this.bettorsService.adduser(user.name);
+    return this.bettorsService.adduser(user.ToDbModel());
   }
 }

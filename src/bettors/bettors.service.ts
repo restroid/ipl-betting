@@ -12,12 +12,13 @@ export class BettorsService {
     constructor(
         @InjectRepository(Bettor)
         private readonly bettorRepository: Repository<Bettor>,
-      ) {}
+    ) { }
+
     findOneByToken(token: string): any {
-        return token+"Ritesh"
+        return token + "Ritesh"
     }
 
-    async findAll():Promise<Bettor[]> {
+    async findAll(): Promise<Bettor[]> {
         return await this.bettorRepository.find();
     }
 
@@ -27,7 +28,7 @@ export class BettorsService {
         }
     }
 
-    adduser(bettor: string) {
-        BettorsService.users.push(bettor);
+    adduser(bettor: Bettor) {
+        return  this.bettorRepository.create(bettor);
     }
 }
