@@ -7,7 +7,7 @@ export class CreateBettorDto {
   constructor() {
     this.name = 'unknown';
   }
-  ToDbModel(): Bettor {
+  toDbModel(): Bettor {
     return new Bettor(this.name);
   }
   @IsString()

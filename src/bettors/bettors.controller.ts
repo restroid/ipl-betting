@@ -27,7 +27,7 @@ export class BettorsController {
   @Post('register')
   async create(@Body() user: CreateBettorDto) {
     this.bettorsService.validateUser(user);
-    var bettor=new Bettor("test");
+    var bettor=user.toDbModel();
     return this.bettorsService.adduser(bettor);
   }
 }
