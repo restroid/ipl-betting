@@ -4,11 +4,14 @@ import { Bettor } from "../bettors.entity";
 
 
 export class CreateBettorDto {
+  constructor() {
+    this.name = 'unknown';
+  }
   ToDbModel(): Bettor {
-    return new Bettor(name);
+    return new Bettor(this.name);
   }
-    @IsString()
-    readonly name: string;
-    @IsInt()
-    readonly validationCode: number;
-  }
+  @IsString()
+  readonly name: string;
+  @IsInt()
+  readonly validationCode: number;
+}
