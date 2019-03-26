@@ -4,7 +4,7 @@ import { CreateBettorDto } from './dto/create-bettor-dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Bettor } from 'dist/bettors/bettors.entity';
+import { Bettor } from './bettors.entity';
 
 @Controller('bettors')
 export class BettorsController {
