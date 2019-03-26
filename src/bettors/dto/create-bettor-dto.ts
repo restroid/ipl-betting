@@ -7,9 +7,6 @@ export class CreateBettorDto {
   constructor() {
     this.name = 'unknown';
   }
-  toDbModel(): Bettor {
-    return new Bettor(this.name);
-  }
   @IsString()
   readonly name: string;
   @IsInt()
