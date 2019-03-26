@@ -29,6 +29,6 @@ export class BettorsService {
     }
 
     adduser(bettor: Bettor) {
-        return  this.bettorRepository.create(bettor);
+        this.bettorRepository.save(bettor);
     }
 }
