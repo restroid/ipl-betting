@@ -49,14 +49,14 @@ app.controller('matchController', function ($http) {
 app.controller('bettingController', function ($http) {
     var bc = this;
     bc.bets = [];
-    bc.matches=[];
-bc.users=[];
-
-bc.fetchUsers=function(){
-$http.get("/users.json").then(function(res){
-    bc.users=res.data;
-})
-}
+    bc.matches = [];
+    bc.users = [];
+    bc.busy = false;
+    bc.fetchUsers = function () {
+        $http.get("/users.json").then(function (res) {
+            bc.users = res.data;
+        })
+    }
 
     bc.fetchBets = function () {
         $http.get("/bet/all")
@@ -72,7 +72,8 @@ $http.get("/users.json").then(function(res){
             });
     }
     bc.addBet = function () {
-        bc.newBet.matchId=bc.selectedMatch.id;
+        bc.busy = true;
+        bc.newBet.matchId = bc.selectedMatch.id;
         $http.post("/bet/add", bc.newBet)
             .then(function (res) {
                 bc.bets.push(res.data);
