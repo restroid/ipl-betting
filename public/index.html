@@ -33,14 +33,14 @@
 
         </label>
         <label>Team 1:
-            <select type="text" ng-model="mc.newMatch.team1" ng-options="t.name for t in mc.teams">
+            <select type="text" ng-model="mc.newMatch.team1" ng-options="t.id as t.name for t in mc.teams">
 
             </select>
 
         </label>
         VS
         <label>Team 2:
-             <select type="text" ng-model="mc.newMatch.team2" ng-options="t.name for t in mc.teams">
+             <select type="text" ng-model="mc.newMatch.team2" ng-options="t.id as t.name for t in mc.teams">
               
             </select>
 
@@ -50,9 +50,11 @@
 
         </label>
         <label>Match Date:
-            <input type="datetime" ng-model="mc.newMatch.matchDate">
+            <input type="datetime" ng-model="mc.newMatch.date">
 
         </label>
+      <button type="button" ng-click="mc.addMatch()">Save</button>
+
     </div>
 
 </body>

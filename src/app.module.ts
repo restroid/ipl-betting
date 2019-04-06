@@ -5,9 +5,10 @@ import { BettorsModule } from './bettors/bettors.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeamModule } from './team/team.module';
+import { MatchModule } from './match/match.module';
 
 @Module({
-  imports: [AuthModule, BettorsModule, TypeOrmModule.forRoot(), TeamModule],
+  imports: [AuthModule, BettorsModule, TypeOrmModule.forRoot(), TeamModule, MatchModule],
   controllers: [AppController],
   providers: [AppService],
 })
