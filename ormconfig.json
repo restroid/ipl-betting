@@ -2,10 +2,9 @@
   "type": "mysql",
   "host": "localhost",
   "port": 3306,
-  "username": "scott",
+  "username": "root",
   "password": "tiger",
   "database": "iplbetting",
   "entities": ["src/**/**.entity{.ts,.js}"],
-  "synchronize": true,
-  "insecureAuth" : true
+  "synchronize": true
 }
