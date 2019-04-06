@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>App</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <script src="/app.js"></script>
+</head>
+
+<body ng-app="app">
+  <div ng-controller="bc as bc" ng-init="bc.fetchTeams()">
+    <ul>
+      <li ng-repeat="t in bc.teams">{{ t.name }}</li>
+    </ul>
+
+    <div>
+      <label> Team code:
+        <input type="text" ng-model="bc.newTeam.name"></label>
+      <label> Team Full Name:
+        <input type="text" ng-model="bc.newTeam.fullName"></label>
+      <button type="button" ng-click="bc.addTeam()">Save</button>
+
+    </div>
+  </div>
+  <hr />
+  <div ng-controller="matchController as mc" ng-init="mc.fetchMatches()">
+      <ul>
+          <li ng-repeat="m in mc.matches">{{ m.name }}</li>
+        </ul>
+        <label>Match Name:
+            <input type="text" ng-model="mc.newMatch.name">
+
+        </label>
+        <label>Team 1:
+            <select type="text" ng-model="mc.newMatch.team1" ng-options="t.name for t in mc.teams">
+
+            </select>
+
+        </label>
+        VS
+        <label>Team 2:
+             <select type="text" ng-model="mc.newMatch.team2" ng-options="t.name for t in mc.teams">
+              
+            </select>
+
+        </label>
+        <label>Venue:
+            <input type="text" ng-model="mc.newMatch.venue">
+
+        </label>
+        <label>Match Date:
+            <input type="datetime" ng-model="mc.newMatch.matchDate">
+
+        </label>
+    </div>
+
+</body>
+
+</html>
