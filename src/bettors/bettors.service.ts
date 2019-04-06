@@ -11,8 +11,7 @@ export class BettorsService {
 
     constructor(
         @InjectRepository(Bettor)
-        private readonly bettorRepository: Repository<Bettor>,
-    ) { }
+        private readonly bettorRepository: Repository<Bettor>) { }
 
     findOneByToken(token: string): any {
         return token + "Ritesh"
