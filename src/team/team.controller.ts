@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Render } from '@nestjs/common';
 import { Team } from './team.entity';
 import { TeamService } from './team.service';
 
@@ -14,5 +14,12 @@ export class TeamController {
     @Post('add')
     async create(@Body() team: Team) {
         return this.teamService.addTeam(team);
+    }
+
+    @Get("listteams")
+    @Render('index')
+    async listTeams(@Body() team: Team) {
+        var teams=await this.teamService.findAll();
+        return {teams:teams};
     }
 }
