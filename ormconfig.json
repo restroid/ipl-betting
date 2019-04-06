@@ -6,5 +6,6 @@
   "password": "tiger",
   "database": "iplbetting",
   "entities": ["src/**/**.entity{.ts,.js}"],
-  "synchronize": true
+  "synchronize": true,
+  "insecureAuth" : true
 }
