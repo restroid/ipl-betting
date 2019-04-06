@@ -1,6 +1,6 @@
 {
   "type": "mysql",
-  "host": "localhost",
+  "host": "ipl.restroid.in",
   "port": 3306,
   "username": "scott",
   "password": "tiger",
