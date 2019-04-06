@@ -1,19 +1,19 @@
 var app = angular.module('app', []);
-app.controller('bc', function ($http) {
-    var bc = this;
-    bc.teams = [];
-    bc.newTeam = {};
-    bc.fetchTeams = function () {
+app.controller('teamController', function ($http) {
+    var tc = this;
+    tc.teams = [];
+    tc.newTeam = {};
+    tc.fetchTeams = function () {
         $http.get("/team/all")
             .then(function (res) {
-                bc.teams = res.data;
+                tc.teams = res.data;
             });
     }
 
-    bc.addTeam = function () {
-        $http.post("/team/add", bc.newTeam)
+    tc.addTeam = function () {
+        $http.post("/team/add", tc.newTeam)
             .then(function (res) {
-                bc.teams.push(res.data);
+                tc.teams.push(res.data);
             })
     }
 });
@@ -42,6 +42,40 @@ app.controller('matchController', function ($http) {
         $http.post("/match/add", mc.newMatch)
             .then(function (res) {
                 mc.matches.push(res.data);
+            })
+    }
+});
+
+app.controller('bettingController', function ($http) {
+    var bc = this;
+    bc.bets = [];
+    bc.matches=[];
+bc.users=[];
+
+bc.fetchUsers=function(){
+$http.get("/users.json").then(function(res){
+    bc.users=res.data;
+})
+}
+
+    bc.fetchBets = function () {
+        $http.get("/bet/all")
+            .then(function (res) {
+                tc.bets = res.data;
+            });
+    }
+    bc.fetchMatches = function () {
+        bc.fetchUsers();
+        $http.get("/bet/matches")
+            .then(function (res) {
+                bc.matches = res.data;
+            });
+    }
+    bc.addBet = function () {
+        bc.newBet.matchId=bc.selectedMatch.id;
+        $http.post("/bet/add", bc.newBet)
+            .then(function (res) {
+                bc.bets.push(res.data);
             })
     }
 });

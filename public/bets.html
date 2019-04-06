@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+
+<body ng-app="app">
+    <div ng-controller="bettingController as bc" ng-init="bc.fetchMatches()">
+        <label> Select User:
+            <select ng-model="bc.newBet.userId" ng-options="u.id as u.name for u in bc.users"></select>
+        </label>
+        <label> Select Match:
+            <select ng-model="bc.selectedMatch" ng-options="m.description for m in bc.matches"></select>
+        </label>
+        <label> Select Team:
+            <select ng-model="bc.newBet.teamId">
+                <option ng-value="bc.selectedMatch.team1.id">{{bc.selectedMatch.team1.name}}</option>
+                <option ng-value="bc.selectedMatch.team2.id">{{bc.selectedMatch.team2.name}}</option>
+            </select>
+        </label>
+        <label>Amount:
+            <input type="number" max="100" min="10" ng-model="bc.newBet.amount">
+        </label>
+        <button type="button" ng-click="bc.addBet()">Save</button>
+
+    </div>
+</body>
+
+</html>

@@ -5,7 +5,6 @@ import { Match } from './match.entity';
 
 @Injectable()
 export class MatchService {
-
     constructor(
         @InjectRepository(Match)
         private readonly matchRepository: Repository<Match>) { }

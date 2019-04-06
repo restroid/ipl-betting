@@ -9,17 +9,17 @@
 </head>
 
 <body ng-app="app">
-  <div ng-controller="bc as bc" ng-init="bc.fetchTeams()">
+  <div ng-controller="teamController as tc" ng-init="tc.fetchTeams()">
     <ul>
-      <li ng-repeat="t in bc.teams">{{ t.name }}</li>
+      <li ng-repeat="t in tc.teams">{{ t.name }}</li>
     </ul>
 
     <div>
       <label> Team code:
-        <input type="text" ng-model="bc.newTeam.name"></label>
+        <input type="text" ng-model="tc.newTeam.name"></label>
       <label> Team Full Name:
-        <input type="text" ng-model="bc.newTeam.fullName"></label>
-      <button type="button" ng-click="bc.addTeam()">Save</button>
+        <input type="text" ng-model="tc.newTeam.fullName"></label>
+      <button type="button" ng-click="tc.addTeam()">Save</button>
 
     </div>
   </div>
