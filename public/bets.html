@@ -9,32 +9,37 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/ngstorage/0.3.6/ngStorage.min.js"></script>
     <script src="/app.js"></script>
 </head>
 
 <body ng-app="app">
 
-    <div class="container" ng-controller="bettingController as bc" ng-init="bc.fetchMatches()">
+    <div class="container" ng-controller="bettingController as bc" ng-init="bc.initialize()">
         <nav class="navbar navbar-light bg-light">
             <a class="navbar-brand" href="#">
-                <img src="/images/ipl8.jpg" width="30" height="30"
-                    class="d-inline-block align-top" alt="">
+                <img src="/images/ipl8.jpg" width="30" height="30" class="d-inline-block align-top" alt="">
                 Betting chalu hai..
             </a>
         </nav>
-        <form>
+        <form ng-hide="bc.user">
+
             <div class="form-group">
-                <label> Select User:</label>
-                <select class="form-control" ng-model="bc.newBet.userId"
-                    ng-options="u.id as u.name for u in bc.users"></select>
+                <label> Enter your email:</label>
+                <input type="email" class="form-control" ng-model="bc.email" />
             </div>
+            <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
+                ng-click="bc.loginUser()">Login</button>
+        </form>
+        <form ng-if="bc.user">
+            <label>Welcome {{bc.user.fullName || bc.user.name}}</label>
 
             <hr />
             <div class="form-group">
                 <label> Select Match:
 
                 </label>
-                <select class="form-control" ng-click="bc.matchSelected()" ng-model="bc.selectedMatch"
+                <select class="form-control" ng-model="bc.selectedMatch"
                     ng-options="m.description for m in bc.matches"></select>
             </div>
 
@@ -42,7 +47,32 @@
             <hr />
 
             <div ng-if="bc.selectedMatch">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="panel">
+                            <div class="panel-head">
+                                {{bc.selectedMatch.team1.name}}
+                            </div>
+                            <div class="panel-body">
+                                Total: {{bc.selectedMatch.team1Total}}
+                                Ratio: {{bc.selectedMatch.team2Total/bc.selectedMatch.matchTotal | number: 2}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="panel">
+                            <div class="panel-head">
+                                {{bc.selectedMatch.team2.name}}
+                            </div>
+                            <div class="panel-body">
+                                Total: {{bc.selectedMatch.team2Total}}
+                                Ratio: {{bc.selectedMatch.team1Total/bc.selectedMatch.matchTotal | number: 2}}
+                            </div>
+                        </div>
+                    </div>
 
+                </div>
+                <hr />
                 <div class="form-row">
                     <div class="form-group col-6">
                         <label> Select Team:

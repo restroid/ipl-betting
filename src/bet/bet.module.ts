@@ -6,9 +6,12 @@ import { Match } from 'src/match/match.entity';
 import { Team } from 'src/team/team.entity';
 import { Bet } from './bet.entity';
 import { Transaction } from 'src/transaction/transaction.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([Match])
+  imports: [ 
+    AuthModule,
+    TypeOrmModule.forFeature([Match])
   ,TypeOrmModule.forFeature([Bet])
   ,TypeOrmModule.forFeature([Transaction])
   ,TypeOrmModule.forFeature([Team])],

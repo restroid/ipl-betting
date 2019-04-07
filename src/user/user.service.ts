@@ -6,10 +6,15 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
+
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>) { }
 
+    async getUserByEmail(email: string): Promise<User> {
+        var users = await this.userRepository.find();
+        return users.find((u) => u.name == email);
+    }
     findOneByToken(token: string): any {
         return token;
     }
@@ -19,7 +24,7 @@ export class UserService {
     }
 
     adduser(user: User) {
-        user.role="member";
+        user.role = "member";
         this.userRepository.save(user);
     }
 }

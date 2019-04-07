@@ -1,6 +1,7 @@
-import { Controller, Body, Post, Get, Param } from '@nestjs/common';
+import { Controller, Body, Post, Get, Param, UseGuards, Res, Req } from '@nestjs/common';
 import { BetService } from './bet.service';
 import { Bet } from './bet.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('bet')
 export class BetController {
@@ -20,8 +21,9 @@ export class BetController {
         return await this.betService.matchDetails(matchId);
     }
     @Post('add')
-    async create(@Body() bet: Bet) {
-        console.log(bet);
+    @UseGuards(AuthGuard())
+    async create(@Body() bet: Bet,@Req() req) {
+        bet.userId=req.user.id;
         return this.betService.add(bet);
     }
 

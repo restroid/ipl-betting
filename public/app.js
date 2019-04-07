@@ -1,4 +1,4 @@
-var app = angular.module('app', []);
+var app = angular.module('app', ["ngStorage"]);
 app.controller('teamController', function ($http) {
     var tc = this;
     tc.teams = [];
@@ -90,24 +90,33 @@ app.controller('transactionController', function ($http) {
     }
 });
 
-app.controller('bettingController', function ($http) {
+app.controller('bettingController', function ($http, $localStorage) {
     var bc = this;
     bc.bets = [];
     bc.matches = [];
-    bc.users = [];
+    // bc.users = [];
     bc.busy = false;
-    bc.fetchUsers = function () {
-        $http.get("/users.json").then(function (res) {
-            bc.users = res.data;
-        })
+    // bc.fetchUsers = function () {
+    //     $http.get("/users.json").then(function (res) {
+    //         bc.users = res.data;
+    //     })
+    // }
+    if($localStorage.userToken){
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
     }
 
-    bc.matchSelected=function(){
-        $http.get("/bet/matchDetails/"+selectedMatch.id)
-        .then(function(res){
-            bc.matchDetails=res.data;
-        });
+    bc.initialize = function () {
+        bc.user = $localStorage.userToken.user;
+        bc.fetchMatches();
     }
+    bc.loginUser = function () {
+        $http.get("/auth/token/" + bc.email)
+            .then(function (res) {
+                bc.user = res.data.user;
+                $localStorage.userToken = res.data;
+            });
+    }
+
     bc.fetchBets = function () {
         $http.get("/bet/all")
             .then(function (res) {
@@ -115,7 +124,7 @@ app.controller('bettingController', function ($http) {
             });
     }
     bc.fetchMatches = function () {
-        bc.fetchUsers();
+
         $http.get("/bet/matches")
             .then(function (res) {
                 bc.matches = res.data;

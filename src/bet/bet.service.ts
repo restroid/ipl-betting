@@ -48,8 +48,8 @@ export class BetService {
                 description: team1.name + " vs " + team2.name,
                 team1: team1,
                 team2: team2,
-                team1Ratio: t2Total/matchTotal,
-                team2Ratio: t1Total/matchTotal,
+                team1Total: t1Total,
+                team2Total: t2Total,
                 matchTotal:matchTotal
             });
         })
