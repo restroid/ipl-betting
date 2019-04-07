@@ -3,33 +3,77 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <title>App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="/app.js"></script>
 </head>
 
 <body ng-app="app">
-    <div ng-controller="bettingController as bc" ng-init="bc.fetchMatches()">
-        <label> Select User:
-            <select ng-model="bc.newBet.userId" ng-options="u.id as u.name for u in bc.users"></select>
-        </label>
-        <hr/>
-        <label> Select Match:
-            <select ng-click="bc.matchSelected()" ng-model="bc.selectedMatch" ng-options="m.description for m in bc.matches"></select>
-        </label>
-        <b>{{bc.matchDetails}}</b>
-        <hr/>
-        <label> Select Team:
-            <select ng-model="bc.newBet.teamId">
-                <option ng-value="bc.selectedMatch.team1.id">{{bc.selectedMatch.team1.name}}</option>
-                <option ng-value="bc.selectedMatch.team2.id">{{bc.selectedMatch.team2.name}}</option>
-            </select>
-        </label>
-        <label>Amount:
-            <input type="number" max="100" min="10" ng-model="bc.newBet.amount">
-        </label>
-        <button type="button" ng-disabled="bc.busy" ng-click="bc.addBet()">Save</button>
 
+    <div class="container" ng-controller="bettingController as bc" ng-init="bc.fetchMatches()">
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="#">
+                <img src="/images/ipl8.jpg" width="30" height="30"
+                    class="d-inline-block align-top" alt="">
+                Betting chalu hai..
+            </a>
+        </nav>
+        <form>
+            <div class="form-group">
+                <label> Select User:</label>
+                <select class="form-control" ng-model="bc.newBet.userId"
+                    ng-options="u.id as u.name for u in bc.users"></select>
+            </div>
+
+            <hr />
+            <div class="form-group">
+                <label> Select Match:
+
+                </label>
+                <select class="form-control" ng-click="bc.matchSelected()" ng-model="bc.selectedMatch"
+                    ng-options="m.description for m in bc.matches"></select>
+            </div>
+
+
+            <hr />
+
+            <div ng-if="bc.selectedMatch">
+
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label> Select Team:
+
+                        </label>
+                        <select class="form-control" ng-model="bc.newBet.teamId">
+                            <option ng-value="bc.selectedMatch.team1.id">{{bc.selectedMatch.team1.name}}</option>
+                            <option ng-value="bc.selectedMatch.team2.id">{{bc.selectedMatch.team2.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Amount:
+                        </label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">&#8377;</span>
+                            </div>
+                            <input class="form-control" type="number" max="100" min="10" ng-model="bc.newBet.amount">
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
+                        ng-click="bc.addBet()">Confirm</button>
+                </div>
+
+            </div>
+        </form>
     </div>
 </body>
 
