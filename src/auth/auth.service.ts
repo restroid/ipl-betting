@@ -10,11 +10,10 @@ export class AuthService {
     private readonly userService: UserService) { }
 
   async createToken(userEmail: string) {
-    var userModel=await this.userService.getUserByEmail(name);
+    var userModel=await this.userService.getUserByEmail(userEmail);
     const user: JwtPayload = { name: userModel.name };
     const accessToken = this.jwtService.sign(user);
     return {
-     
       user: userModel,
       expiresIn: 3600,
       accessToken,

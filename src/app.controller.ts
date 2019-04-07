@@ -1,4 +1,4 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Res, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { join } from 'path';
 
@@ -9,9 +9,10 @@ export class AppController {
   
 
   @Get("admin247")
-  async listTeams(@Res() res) {
+  async adminPage(@Res() res) {
     res.sendFile(join(__dirname, '..', 'views', "admin.html"));
   }
+
   @Get()
     async bet(@Res() res) {
       res.sendFile(join(__dirname, '..', 'views', "bets.html"));
