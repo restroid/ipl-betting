@@ -19,6 +19,8 @@ export class TransactionService {
     }
 
     addtransaction(transaction: Transaction) {
+        if (transaction.remark == null)
+            transaction.remark = "none";
         this.transactionRepository.save(transaction);
     }
 }
