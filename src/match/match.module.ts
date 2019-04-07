@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MatchController } from 'dist/src/match/match.controller';
-import { MatchService } from 'dist/src/match/match.service';
+import { MatchController } from 'src/match/match.controller';
+import { MatchService } from 'src/match/match.service';
 import { Match } from './match.entity';
 
 @Module({
