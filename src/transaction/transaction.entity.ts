@@ -15,7 +15,7 @@ export class Transaction {
   mode: string;
 
   @Column({ length: 500 })
-  remark: string;
+  remark?: string;
 
   @Column()
   date: Date
