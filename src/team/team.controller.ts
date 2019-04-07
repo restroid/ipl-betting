@@ -16,10 +16,4 @@ export class TeamController {
     async create(@Body() team: Team) {
         return this.teamService.addTeam(team);
     }
-
-    @Get("listteams")
-   // @Render('public/index.html')
-    async listTeams(@Res() res) {
-       res.sendFile(join(__dirname, '..', '..','public',"index.html"));
-    }
 }

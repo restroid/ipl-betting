@@ -5,9 +5,6 @@ export class Match {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column({ length: 100 })
-  name: string;
-
   @Column()
   team1: number;
 

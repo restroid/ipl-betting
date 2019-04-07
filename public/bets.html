@@ -13,9 +13,12 @@
         <label> Select User:
             <select ng-model="bc.newBet.userId" ng-options="u.id as u.name for u in bc.users"></select>
         </label>
+        <hr/>
         <label> Select Match:
-            <select ng-model="bc.selectedMatch" ng-options="m.description for m in bc.matches"></select>
+            <select ng-click="bc.matchSelected()" ng-model="bc.selectedMatch" ng-options="m.description for m in bc.matches"></select>
         </label>
+        <b>{{bc.matchDetails}}</b>
+        <hr/>
         <label> Select Team:
             <select ng-model="bc.newBet.teamId">
                 <option ng-value="bc.selectedMatch.team1.id">{{bc.selectedMatch.team1.name}}</option>

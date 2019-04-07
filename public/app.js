@@ -17,7 +17,24 @@ app.controller('teamController', function ($http) {
             })
     }
 });
+app.controller('userController', function ($http) {
+    var uc = this;
+    uc.users = [];
+    uc.newUser = {};
+    uc.fetchUsers = function () {
+        $http.get("/user/all")
+            .then(function (res) {
+                uc.users = res.data;
+            });
+    }
 
+    uc.addUser = function () {
+        $http.post("/user/register", uc.newUser)
+            .then(function (res) {
+                uc.users.push(res.data);
+            })
+    }
+});
 
 app.controller('matchController', function ($http) {
     var mc = this;
@@ -46,6 +63,33 @@ app.controller('matchController', function ($http) {
     }
 });
 
+app.controller('transactionController', function ($http) {
+    var tcc = this;
+    tcc.transactions = [];
+    tcc.newTransaction = {};
+    tcc.users = [];
+    tcc.fetchUsers = function () {
+        $http.get("/user/all")
+            .then(function (res) {
+                tcc.users = res.data;
+            });
+    }
+    tcc.fetchTransactions = function () {
+        tcc.fetchUsers();
+        $http.get("/transaction/all")
+            .then(function (res) {
+                tcc.transactions = res.data;
+            });
+    }
+
+    tcc.addTransaction = function () {
+        $http.post("/transaction/add", tcc.newTransaction)
+            .then(function (res) {
+                tcc.transactions.push(res.data);
+            })
+    }
+});
+
 app.controller('bettingController', function ($http) {
     var bc = this;
     bc.bets = [];
@@ -58,6 +102,12 @@ app.controller('bettingController', function ($http) {
         })
     }
 
+    bc.matchSelected=function(){
+        $http.get("/bet/matchDetails/"+selectedMatch.id)
+        .then(function(res){
+            bc.matchDetails=res.data;
+        });
+    }
     bc.fetchBets = function () {
         $http.get("/bet/all")
             .then(function (res) {

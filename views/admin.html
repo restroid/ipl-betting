@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>App</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <script src="/app.js"></script>
+</head>
+
+<body ng-app="app">
+  <div ng-controller="teamController as tc" ng-init="tc.fetchTeams()">
+    <ul>
+      <li ng-repeat="t in tc.teams">{{ t.name }}</li>
+    </ul>
+
+    <div>
+      <label> Team code:
+        <input type="text" ng-model="tc.newTeam.name"></label>
+      <label> Team Full Name:
+        <input type="text" ng-model="tc.newTeam.fullName"></label>
+      <button type="button" ng-click="tc.addTeam()">Save</button>
+
+    </div>
+  </div>
+  <hr />
+  <div ng-controller="userController as uc" ng-init="uc.fetchUsers()">
+    <ul>
+      <li ng-repeat="u in uc.users">{{ u.fullName }} ({{u.name}})</li>
+    </ul>
+
+    <div>
+      <label> User Name(loginReference):
+        <input type="text" ng-model="uc.newUser.name"></label>
+      <label> User Full Name:
+        <input type="text" ng-model="uc.newUser.fullName"></label>
+      <button type="button" ng-click="uc.addUser()">Save</button>
+
+    </div>
+  </div>
+  <hr />
+
+  <div ng-controller="matchController as mc" ng-init="mc.fetchMatches()">
+    <ul>
+      <li ng-repeat="m in mc.matches">{{ m.name }}</li>
+    </ul>
+    <label>Team 1:
+      <select type="text" ng-model="mc.newMatch.team1" ng-options="t.id as t.name for t in mc.teams">
+      </select>
+    </label>
+    VS
+    <label>Team 2:
+      <select type="text" ng-model="mc.newMatch.team2" ng-options="t.id as t.name for t in mc.teams">
+
+      </select>
+
+    </label>
+    <label>Venue:
+      <input type="text" ng-model="mc.newMatch.venue">
+
+    </label>
+    <label>Match Date:
+      <input type="datetime" ng-model="mc.newMatch.date">
+
+    </label>
+    <button type="button" ng-click="mc.addMatch()">Save</button>
+
+  </div>
+  <hr />
+
+  <div ng-controller="transactionController as tcc" ng-init="tcc.fetchTransactions()">
+    <ul>
+      <li ng-repeat="t in tcc.transactions">{{t.date}} - {{ t.name }} - {{t.amount}} - {{t.mode}}</li>
+    </ul>
+    <label>Mode of Payment:
+      <select ng-model="tcc.newTransaction.mode">
+        <option>Paytm</option>
+        <option>UPI</option>
+        <option>Cash</option>
+        <option>Other</option>
+      </select>
+
+    </label>
+    <label>User:
+      <select type="text" ng-model="tcc.newTransaction.userId" ng-options="t.id as t.fullName for t in tcc.users">
+      </select>
+    </label>
+    <label>Transaction Amount:
+        <input type="number" ng-model="tcc.newTransaction.amount">
+      </label>
+    <label>Transaction Date:
+      <input type="datetime" ng-model="tcc.newTransaction.date">
+    </label>
+    <label>Remark:
+        <input type="text" ng-model="tcc.newTransaction.remark">
+      </label>
+    <button type="button" ng-click="tcc.addTransaction()">Save</button>
+  </div>
+</body>
+
+</html>

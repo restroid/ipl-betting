@@ -1,10 +1,10 @@
-import { Controller, Body, Post, Get } from '@nestjs/common';
+import { Controller, Body, Post, Get, Param } from '@nestjs/common';
 import { BetService } from './bet.service';
 import { Bet } from './bet.entity';
 
 @Controller('bet')
 export class BetController {
-    constructor(private readonly betService: BetService){}
+    constructor(private readonly betService: BetService) { }
 
     @Get('all')
     async getAllUsers(): Promise<Bet[]> {
@@ -14,6 +14,10 @@ export class BetController {
     @Get('matches')
     async getAllMatches(): Promise<any[]> {
         return await this.betService.matches();
+    }
+    @Get('matchDetails/:matchId')
+    async getMatchDetails(@Param('matchId') matchId: number): Promise<string> {
+        return await this.betService.matchDetails(matchId);
     }
     @Post('add')
     async create(@Body() bet: Bet) {
