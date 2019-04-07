@@ -49,7 +49,7 @@ app.controller('matchController', function ($http) {
     }
     mc.fetchMatches = function () {
         mc.fetchTeams();
-        $http.get("/match/all")
+        $http.get("/bet/matches")
             .then(function (res) {
                 mc.matches = res.data;
             });

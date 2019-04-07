@@ -5,6 +5,8 @@
   <meta charset="utf-8">
   <title>App</title>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/ngstorage/0.3.6/ngStorage.min.js"></script>
+
   <script src="/app.js"></script>
 </head>
 
@@ -42,7 +44,7 @@
 
   <div ng-controller="matchController as mc" ng-init="mc.fetchMatches()">
     <ul>
-      <li ng-repeat="m in mc.matches">{{ m.name }}</li>
+      <li ng-repeat="m in mc.matches">{{ m.description }}</li>
     </ul>
     <label>Team 1:
       <select type="text" ng-model="mc.newMatch.team1" ng-options="t.id as t.name for t in mc.teams">

@@ -6,13 +6,14 @@ import { join } from 'path';
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  
 
-  @Get("admin")
+  @Get("admin247")
   async listTeams(@Res() res) {
     res.sendFile(join(__dirname, '..', 'views', "admin.html"));
   }
+  @Get()
+    async bet(@Res() res) {
+      res.sendFile(join(__dirname, '..', 'views', "bets.html"));
+    }
 }

@@ -2,6 +2,7 @@ import { Controller, Body, Post, Get, Param, UseGuards, Res, Req } from '@nestjs
 import { BetService } from './bet.service';
 import { Bet } from './bet.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { join } from 'path';
 
 @Controller('bet')
 export class BetController {
@@ -11,7 +12,7 @@ export class BetController {
     async getAllUsers(): Promise<Bet[]> {
         return await this.betService.findAll();
     }
-
+    
     @Get('matches')
     async getAllMatches(): Promise<any[]> {
         return await this.betService.matches();
