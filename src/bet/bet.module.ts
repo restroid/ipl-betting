@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { BetController } from './bet.controller';
 import { BetService } from './bet.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Match } from 'src/match/match.entity';
-import { Team } from 'src/team/team.entity';
+import { Match } from '../match/match.entity';
+import { Team } from '../team/team.entity';
 import { Bet } from './bet.entity';
-import { Transaction } from 'src/transaction/transaction.entity';
-import { AuthModule } from 'src/auth/auth.module';
+import { Transaction } from '../transaction/transaction.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [ 
