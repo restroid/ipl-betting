@@ -5,25 +5,25 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { User } from './user.entity';
 
+@UseGuards(AuthGuard(),RolesGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get('all')
- // @UseGuards(AuthGuard())
+  @Roles('Admin')
   async getAllUsers(): Promise<User[]> {
     return await this.userService.findAll();
   }
-
+  
   @Get('auth')
- // @UseGuards(AuthGuard(), RolesGuard)
-  //@Roles('admin')
+  @Roles('Admin')
   async testAuth(@Request() req: any): Promise<User[]> {
     return await this.userService.findAll();
   }
 
-  //@UsePipes(ValidationPipe)
   @Post('register')
+  @Roles('Admin')
   async create(@Body() user: User) {
     return this.userService.adduser(user);
   }

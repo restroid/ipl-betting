@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchController } from './match.controller';
 import { MatchService } from './match.service';
 import { Match } from './match.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Match])],
+    imports: [AuthModule,TypeOrmModule.forFeature([Match])],
     providers: [MatchService],
     controllers: [MatchController]
   })

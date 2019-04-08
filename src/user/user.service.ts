@@ -24,7 +24,7 @@ export class UserService {
     }
 
     adduser(user: User) {
-        user.role = "member";
+        user.role = "[\"Member\"]";
         this.userRepository.save(user);
     }
 }

@@ -1,8 +1,12 @@
 var app = angular.module('app', ["ngStorage"]);
-app.controller('teamController', function ($http) {
+app.controller('teamController', function ($http, $localStorage) {
     var tc = this;
     tc.teams = [];
     tc.newTeam = {};
+    if ($localStorage.userToken) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    }
+
     tc.fetchTeams = function () {
         $http.get("/team/all")
             .then(function (res) {
@@ -17,10 +21,14 @@ app.controller('teamController', function ($http) {
             })
     }
 });
-app.controller('userController', function ($http) {
+app.controller('userController', function ($http, $localStorage) {
     var uc = this;
     uc.users = [];
     uc.newUser = {};
+    if ($localStorage.userToken) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    }
+
     uc.fetchUsers = function () {
         $http.get("/user/all")
             .then(function (res) {
@@ -36,11 +44,15 @@ app.controller('userController', function ($http) {
     }
 });
 
-app.controller('matchController', function ($http) {
+app.controller('matchController', function ($http, $localStorage) {
     var mc = this;
     mc.matches = [];
     mc.newMatch = {};
     mc.teams = [];
+    if ($localStorage.userToken) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    }
+
     mc.fetchTeams = function () {
         $http.get("/team/all")
             .then(function (res) {
@@ -63,11 +75,15 @@ app.controller('matchController', function ($http) {
     }
 });
 
-app.controller('transactionController', function ($http) {
+app.controller('transactionController', function ($http, $localStorage) {
     var tcc = this;
     tcc.transactions = [];
     tcc.newTransaction = {};
     tcc.users = [];
+    if ($localStorage.userToken) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    }
+
     tcc.fetchUsers = function () {
         $http.get("/user/all")
             .then(function (res) {
@@ -94,40 +110,38 @@ app.controller('bettingController', function ($http, $localStorage) {
     var bc = this;
     bc.bets = [];
     bc.matches = [];
-    // bc.users = [];
     bc.busy = false;
-    // bc.fetchUsers = function () {
-    //     $http.get("/users.json").then(function (res) {
-    //         bc.users = res.data;
-    //     })
-    // }
-    if($localStorage.userToken){
-        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
-    }
+
 
     bc.initialize = function () {
-        bc.user = $localStorage.userToken.user;
-        bc.fetchMatches();
-        bc.fetchTransactions();  
-        ;  
+        if ($localStorage.userToken) {
+            $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+            bc.user = $localStorage.userToken.user;
+            bc.fetchMatches();
+            bc.fetchTransactions();
+        }
+    }
+    bc.signout = function () {
+        $localStorage.userToken = null;
+        bc.user = null;
     }
     bc.loginUser = function () {
         $http.get("/auth/token/" + bc.email)
             .then(function (res) {
                 bc.user = res.data.user;
                 $localStorage.userToken = res.data;
-                $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+                bc.initialize();
             });
     }
-    
-    bc.fetchTransactions=function(){
+
+    bc.fetchTransactions = function () {
         $http.get("/bet/myTrans")
-        .then(function (res) {
-            bc.transactions = res.data;
-        });
+            .then(function (res) {
+                bc.transactions = res.data;
+            });
 
     }
-   
+
     bc.fetchMatches = function () {
 
         $http.get("/bet/matches")
@@ -141,6 +155,7 @@ app.controller('bettingController', function ($http, $localStorage) {
         $http.post("/bet/add", bc.newBet)
             .then(function (res) {
                 bc.bets.push(res.data);
+                bc.fetchTransactions();
             })
     }
 });

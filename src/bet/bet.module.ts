@@ -9,13 +9,12 @@ import { Transaction } from '../transaction/transaction.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [ 
-    AuthModule,
+  imports: [AuthModule,
     TypeOrmModule.forFeature([Match])
-  ,TypeOrmModule.forFeature([Bet])
-  ,TypeOrmModule.forFeature([Transaction])
-  ,TypeOrmModule.forFeature([Team])],
+    , TypeOrmModule.forFeature([Bet])
+    , TypeOrmModule.forFeature([Transaction])
+    , TypeOrmModule.forFeature([Team])],
   controllers: [BetController],
   providers: [BetService]
 })
-export class BetModule {}
+export class BetModule { }

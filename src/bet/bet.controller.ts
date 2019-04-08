@@ -2,37 +2,29 @@ import { Controller, Body, Post, Get, Param, UseGuards, Res, Req } from '@nestjs
 import { BetService } from './bet.service';
 import { Bet } from './bet.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { join } from 'path';
-import { Duplex } from 'stream';
-import { async } from 'rxjs/internal/scheduler/async';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('bet')
+@UseGuards(AuthGuard(),RolesGuard)
 export class BetController {
     constructor(private readonly betService: BetService) { }
-
-    @Get('all')
-    async getAllUsers(): Promise<Bet[]> {
-        return await this.betService.findAll();
-    }
-    
+   
     @Get('matches')
+    @Roles('Member')
     async getAllMatches(): Promise<any[]> {
         return await this.betService.matches();
     }
-    @Get('matchDetails/:matchId')
-    async getMatchDetails(@Param('matchId') matchId: number): Promise<string> {
-        return await this.betService.matchDetails(matchId);
-    }
+
     @Post('add')
-    @UseGuards(AuthGuard())
+    @Roles('Member')
     async create(@Body() bet: Bet,@Req() req) {
         bet.userId=req.user.id;
         return this.betService.add(bet);
     }
     @Get('myTrans')
-    @UseGuards(AuthGuard())
+    @Roles('Member')
     async myTransactions(@Req() req):Promise<any[]>{
-        console.log(req);
         return await this.betService.findForUser(req.user.id);
     }
 

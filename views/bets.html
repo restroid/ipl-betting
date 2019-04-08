@@ -21,6 +21,7 @@
                 <img src="/images/IPL8.jpg" width="30" height="30" class="d-inline-block align-top" alt="">
                 Betting chalu hai..
             </a>
+            <button ng-if="bc.user" class="btn btn-outline my-2 my-sm-0" ng-click="bc.signout()">Sign Out</button>
         </nav>
         <form ng-hide="bc.user">
 
@@ -33,7 +34,6 @@
         </form>
         <form ng-if="bc.user">
             <label>Welcome {{bc.user.fullName || bc.user.name}}</label>
-
             <hr />
             <div class="form-group">
                 <label> Select Match:
@@ -98,12 +98,17 @@
                     <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
                         ng-click="bc.addBet()">Confirm</button>
                 </div>
+                <br />
+                <hr/>
             </div>
         </form>
-
+        <div ng-if="bc.user">
+        <label>Hisaab
+            </label>
         <ul>
             <li ng-repeat="t in bc.transactions">{{ t.trans }} : {{t.amount}}</li>
         </ul>
+        </div>
     </div>
 </body>
 

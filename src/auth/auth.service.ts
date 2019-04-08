@@ -9,7 +9,7 @@ export class AuthService {
     private readonly userService: UserService) { }
 
   async createToken(userEmail: string) {
-    var userModel=await this.userService.getUserByEmail(userEmail);
+    var userModel = await this.userService.getUserByEmail(userEmail);
     const user: JwtPayload = { name: userModel.name };
     const accessToken = this.jwtService.sign(user);
     return {
@@ -22,7 +22,7 @@ export class AuthService {
   async validateUser(payload: JwtPayload): Promise<any> {
     // put some validation logic here
     // for example query user by id/email/username
-     var user=await this.userService.getUserByEmail(payload.name);
-    return { id: user.id, roles: [user.role] };
+    var user = await this.userService.getUserByEmail(payload.name);
+    return { id: user.id, roles: JSON.parse(user.role) };
   }
 }
