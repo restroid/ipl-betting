@@ -19,8 +19,6 @@ export class MatchController {
     @Post('add')
     @Roles('Admin')
     async create(@Body() match: Match) {
-        match.id = null;
-        console.log(match);
         return this.matchService.add(match);
     }
 

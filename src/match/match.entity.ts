@@ -21,5 +21,5 @@ export class Match {
   winnerTeamId?: number;
 
   @Column('double')
-  winnerRatio: number = 0;
+  winnerRatio?: number = 0;
 }

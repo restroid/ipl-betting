@@ -16,6 +16,8 @@ export class MatchService {
 
     async add(match: Match): Promise<Match> {
         match.id = null;
+        match.winnerRatio=0;
+        match.winnerTeamId=0;
         return await this.matchRepository.save(match);
     }
 
