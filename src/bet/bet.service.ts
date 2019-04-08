@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bet } from './bet.entity';
 import { Repository } from 'typeorm';
@@ -29,9 +29,10 @@ export class BetService {
     }
     async matches(): Promise<any[]> {
         var matches = await this.matchRepository.find();
-        var indiaTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+        var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
         var now = new Date(indiaTime);
-        matches = matches.filter((m) => m.date > now).slice(0, 2)
+        now.setDate(now.getDate() - 1);//yesterday
+        matches = matches.filter((m) => m.date > now).slice(0, 3)
         var teams = await this.teamRepository.find();
         var bets = await this.betRepository.find();
         var output = [];
@@ -65,6 +66,12 @@ export class BetService {
     }
     async add(bet: Bet): Promise<Bet> {
         bet.id = null;
+        var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+        var now = new Date(indiaTime);
+        var match = await this.matchRepository.findOne({ id: bet.matchId });
+        if (now > match.date) {
+            throw new NotAcceptableException("Your time for betting is up!")
+        }
         return await this.betRepository.save(bet);
     }
 }
