@@ -57,6 +57,8 @@ export class BetService {
                 description: team1.name + " vs " + team2.name,
                 team1: team1,
                 team2: team2,
+                venue: m.venue,
+                date:m.date.toString(),
                 team1Total: t1Total,
                 team2Total: t2Total,
                 matchTotal: matchTotal
