@@ -42,10 +42,7 @@
                 <select class="form-control" ng-model="bc.selectedMatch"
                     ng-options="m.description for m in bc.matches"></select>
             </div>
-
-
             <hr />
-{{bc.transactions}}!!
             <div ng-if="bc.selectedMatch">
                 <div class="row">
                     <div class="col-6">
@@ -101,9 +98,12 @@
                     <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
                         ng-click="bc.addBet()">Confirm</button>
                 </div>
-
             </div>
         </form>
+
+        <ul>
+            <li ng-repeat="t in bc.transactions">{{ t.trans }} : {{t.amount}}</li>
+        </ul>
     </div>
 </body>
 
