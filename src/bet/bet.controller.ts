@@ -3,6 +3,8 @@ import { BetService } from './bet.service';
 import { Bet } from './bet.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { join } from 'path';
+import { Duplex } from 'stream';
+import { async } from 'rxjs/internal/scheduler/async';
 
 @Controller('bet')
 export class BetController {
@@ -26,6 +28,12 @@ export class BetController {
     async create(@Body() bet: Bet,@Req() req) {
         bet.userId=req.user.id;
         return this.betService.add(bet);
+    }
+    @Get('myTrans')
+    @UseGuards(AuthGuard())
+    async myTransactions(@Req() req):Promise<any[]>{
+        console.log(req);
+        return await this.betService.findForUser(req.user.id);
     }
 
 }

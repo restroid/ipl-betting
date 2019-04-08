@@ -5,6 +5,7 @@ import { Match } from './match.entity';
 
 @Injectable()
 export class MatchService {
+
     constructor(
         @InjectRepository(Match)
         private readonly matchRepository: Repository<Match>) { }
@@ -16,5 +17,9 @@ export class MatchService {
     async add(match: Match): Promise<Match> {
         match.id = null;
         return await this.matchRepository.save(match);
+    }
+
+    setWinner(matchId: number,teamId:number) {
+        throw new Error("Method will set ratio and winner id");
     }
 }

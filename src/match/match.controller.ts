@@ -17,4 +17,9 @@ export class MatchController {
         console.log(match);
         return this.matchService.add(match);
     }
+
+    @Post('setWinner')
+    async setWinner(@Body() winner: any) {
+        return this.matchService.setWinner(winner.matchId,winner.teamId);
+    }
 }

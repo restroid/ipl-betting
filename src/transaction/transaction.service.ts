@@ -11,7 +11,7 @@ export class TransactionService {
         private readonly transactionRepository: Repository<Transaction>) { }
 
 
-    async findForUser(userId: number): Promise<any[]> {
+    async findAll(): Promise<any[]> {
         return await this.transactionRepository
             .query(`select t.id,t.amount,t.date,u.name,t.mode from transaction t 
             join user u on t.userId=u.id

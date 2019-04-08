@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { Transaction } from './transaction.entity';
 import { TransactionService } from './transaction.service';
 
@@ -8,9 +8,9 @@ export class TransactionController {
     
     @Get('all')
     async getAllTransactions(): Promise<any[]> {
-        return await this.transactionService.findForUser(1);
+        return await this.transactionService.findAll();
     }
-
+    
     //@UsePipes(ValidationPipe)
     @Post('add')
     async create(@Body() Transaction: Transaction) {

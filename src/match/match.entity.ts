@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Double } from 'typeorm';
 
 @Entity()
 export class Match {
@@ -16,4 +16,10 @@ export class Match {
 
   @Column()
   date: Date;
+
+  @Column('int')
+  winnerTeamId?: number;
+
+  @Column('double')
+  winnerRatio: number = 0;
 }

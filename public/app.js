@@ -108,21 +108,26 @@ app.controller('bettingController', function ($http, $localStorage) {
     bc.initialize = function () {
         bc.user = $localStorage.userToken.user;
         bc.fetchMatches();
+        bc.fetchTransactions();  
+        ;  
     }
     bc.loginUser = function () {
         $http.get("/auth/token/" + bc.email)
             .then(function (res) {
                 bc.user = res.data.user;
                 $localStorage.userToken = res.data;
+                $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
             });
     }
+    
+    bc.fetchTransactions=function(){
+        $http.get("/bet/myTrans")
+        .then(function (res) {
+            bc.transactions = res.data;
+        });
 
-    bc.fetchBets = function () {
-        $http.get("/bet/all")
-            .then(function (res) {
-                tc.bets = res.data;
-            });
     }
+   
     bc.fetchMatches = function () {
 
         $http.get("/bet/matches")
