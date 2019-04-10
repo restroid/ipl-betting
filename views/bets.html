@@ -53,7 +53,7 @@
                             </div>
                             <div class="panel-body">
                                 Total: {{bc.selectedMatch.team1Total}}
-                                Ratio: {{bc.selectedMatch.team2Total/bc.selectedMatch.matchTotal | number: 2}}
+                                Ratio: {{bc.selectedMatch.team2Total/bc.selectedMatch.team1Total | number: 2}}
                             </div>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                             </div>
                             <div class="panel-body">
                                 Total: {{bc.selectedMatch.team2Total}}
-                                Ratio: {{bc.selectedMatch.team1Total/bc.selectedMatch.matchTotal | number: 2}}
+                                Ratio: {{bc.selectedMatch.team1Total/bc.selectedMatch.team2Total | number: 2}}
                             </div>
                         </div>
                     </div>
