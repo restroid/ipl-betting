@@ -178,6 +178,14 @@ app.controller('bettingController', function ($http, $localStorage) {
             return 0;
         }
     }
+    bc.timeNotOver=function(){
+        return new Date(bc.selectedMatch.date) > new Date();
+    }
+    bc.isValidBet =function(){
+
+       return (new Date(bc.selectedMatch.date) > new Date()) 
+       && bc.newBet  && bc.newBet.teamId && bc.newBet.amount;
+    }
     bc.fetchMatches = function () {
 
         $http.get("/bet/matches")

@@ -47,6 +47,7 @@
             <hr />
             <div ng-if="bc.selectedMatch">
                 <div class="text-center"><b>{{bc.selectedMatch.venue}}</b> on <b>{{bc.selectedMatch.date | date: "dd-MMM @ HH:mm"}}</b></div>
+                <br />
                 <div class="row">
                     <div class="col-6">
                         <div class="panel">
@@ -73,7 +74,8 @@
 
                 </div>
                 <hr />
-                <div class="form-row">
+                <div class="text-center" ng-hide="bc.timeNotOver()">Time Over</div>
+                <div class="form-row" ng-if="bc.timeNotOver()">
                     <div class="form-group col-6">
                         <label> Select Team:
 
@@ -101,7 +103,7 @@
                     
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" ng-if="bc.isValidBet()">
                     <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
                         ng-click="bc.addBet()">Confirm</button>
                 </div>
@@ -110,7 +112,7 @@
             </div>
         </form>
         <div ng-if="bc.user">
-        <label>Hisaab : &#8377;{{ bc.balanceAmount }} 
+        <label>Hisaab : &#8377;{{ bc.balanceAmount | number: 2}} 
             </label>
         <ul>
             <li ng-repeat="t in bc.transactions">{{ t.trans }} : &#8377;{{t.amount}}</li>
