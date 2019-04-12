@@ -58,7 +58,7 @@ export class BetService {
                 team1: team1,
                 team2: team2,
                 venue: m.venue,
-                date:m.date.toString(),
+                date: new Date(m.date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })),
                 team1Total: t1Total,
                 team2Total: t2Total,
                 matchTotal: matchTotal

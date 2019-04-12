@@ -23,6 +23,7 @@
             </a>
             <button ng-if="bc.user" class="btn btn-outline my-2 my-sm-0" ng-click="bc.signout()">Sign Out</button>
         </nav>
+       
         <form ng-hide="bc.user">
 
             <div class="form-group">
@@ -32,6 +33,7 @@
             <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
                 ng-click="bc.loginUser()">Login</button>
         </form>
+        <span class="alert alert-danger" ng-if="bc.error">{{bc.error}}</span>
         <form ng-if="bc.user">
             <label>Welcome {{bc.user.fullName || bc.user.name}}</label>
             <hr />
@@ -44,7 +46,7 @@
             </div>
             <hr />
             <div ng-if="bc.selectedMatch">
-                <div class="text-center"><b>{{bc.selectedMatch.venue}}</b> on <b>{{bc.selectedMatch.date}}</b></div>
+                <div class="text-center"><b>{{bc.selectedMatch.venue}}</b> on <b>{{bc.selectedMatch.date | date: "dd-MMM @ HH:mm"}}</b></div>
                 <div class="row">
                     <div class="col-6">
                         <div class="panel">
@@ -52,8 +54,8 @@
                                 {{bc.selectedMatch.team1.name}}
                             </div>
                             <div class="panel-body">
-                                Total: {{bc.selectedMatch.team1Total}}
-                                Ratio: {{bc.selectedMatch.team2Total/bc.selectedMatch.team1Total | number: 2}}
+                                Total: {{bc.selectedMatch.team1Total+(bc.newBet && bc.selectedMatch.team1.id==bc.newBet.teamId?bc.newBet.amount:0)}}
+                                Ratio: {{bc.getTeamRatio(bc.selectedMatch.team1Total,bc.newBet && bc.selectedMatch.team1.id==bc.newBet.teamId)| number: 2}}
                             </div>
                         </div>
                     </div>
@@ -63,8 +65,8 @@
                                 {{bc.selectedMatch.team2.name}}
                             </div>
                             <div class="panel-body">
-                                Total: {{bc.selectedMatch.team2Total}}
-                                Ratio: {{bc.selectedMatch.team1Total/bc.selectedMatch.team2Total | number: 2}}
+                                Total: {{bc.selectedMatch.team2Total + (bc.newBet && bc.selectedMatch.team2.id==bc.newBet.teamId?bc.newBet.amount:0)}}
+                                Ratio: {{bc.getTeamRatio(bc.selectedMatch.team2Total,bc.newBet && bc.selectedMatch.team2.id==bc.newBet.teamId) | number: 2}}
                             </div>
                         </div>
                     </div>
@@ -93,6 +95,10 @@
 
 
                     </div>
+                    <div class="form-group col-12 text-center">
+                        <b class="center">{{bc.getWinningAmount() | number: 2}}</b>
+                    </div>
+                    
                 </div>
 
                 <div class="form-group">

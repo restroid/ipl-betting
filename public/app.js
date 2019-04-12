@@ -114,7 +114,8 @@ app.controller('bettingController', function ($http, $localStorage) {
 
 
     bc.initialize = function () {
-        if ($localStorage.userToken) {
+        bc.error = null;
+        if ($localStorage.userToken && new Date($localStorage.userToken.expiry) > new Date()) {
             $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
             bc.user = $localStorage.userToken.user;
             bc.fetchMatches();
@@ -126,11 +127,19 @@ app.controller('bettingController', function ($http, $localStorage) {
         bc.user = null;
     }
     bc.loginUser = function () {
+        bc.error = null;
         $http.get("/auth/token/" + bc.email)
             .then(function (res) {
                 bc.user = res.data.user;
-                $localStorage.userToken = res.data;
+                var tokenData = res.data;
+                var dt = new Date();
+                dt.setSeconds(dt.getSeconds() + tokenData.expiresIn);
+                tokenData.expiry = dt;
+                $localStorage.userToken = tokenData;
                 bc.initialize();
+            }, function (d) {
+                console.log(d);
+                bc.error = "Email not found! Please contact the bookie!";
             });
     }
 
@@ -138,14 +147,37 @@ app.controller('bettingController', function ($http, $localStorage) {
         $http.get("/bet/myTrans")
             .then(function (res) {
                 bc.transactions = res.data;
-                bc.balanceAmount=0;
+                bc.balanceAmount = 0;
                 bc.transactions.forEach(t => {
-                    bc.balanceAmount+=parseFloat(t.amount);
+                    bc.balanceAmount += parseFloat(t.amount);
                 });
             });
 
     }
+    bc.getTeamRatio = function (amount, isWinning) {
+        let winningAmount = 0;
+        if (bc.newBet && bc.newBet.amount)
+            {
+                winningAmount = bc.newBet.amount;
+               amount= amount + (isWinning?winningAmount:0);
+            }
 
+        return (bc.selectedMatch.matchTotal + winningAmount - amount) / amount;
+    }
+    
+    bc.getWinningAmount = function () {
+        if (bc.newBet && bc.newBet.amount && bc.newBet.teamId == bc.selectedMatch.team1.id) {
+            ratio = bc.getTeamRatio(bc.selectedMatch.team1Total,true);
+            return ratio * bc.newBet.amount * .9;
+        }
+        else if (bc.newBet && bc.newBet.amount && bc.newBet.teamId == bc.selectedMatch.team2.id){
+            ratio = bc.getTeamRatio( bc.selectedMatch.team2Total,true);
+            return ratio * bc.newBet.amount * .9;
+        }
+        else{
+            return 0;
+        }
+    }
     bc.fetchMatches = function () {
 
         $http.get("/bet/matches")
