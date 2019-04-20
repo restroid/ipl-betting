@@ -115,11 +115,20 @@ app.controller('bettingController', function ($http, $localStorage) {
 
     bc.initialize = function () {
         bc.error = null;
-        if ($localStorage.userToken && new Date($localStorage.userToken.expiry) > new Date()) {
-            $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
-            bc.user = $localStorage.userToken.user;
-            bc.fetchMatches();
-            bc.fetchTransactions();
+        if ($localStorage.userToken) {
+            if(new Date($localStorage.userToken.expiry) > new Date())
+            {
+                $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+                bc.user = $localStorage.userToken.user;
+                bc.fetchMatches();
+                bc.fetchTransactions();
+            }
+            else if($localStorage.userToken.email)
+            {
+                bc.email=$localStorage.userToken.email;
+                bc.loginUser();
+            }
+            
         }
     }
     bc.signout = function () {
@@ -135,6 +144,7 @@ app.controller('bettingController', function ($http, $localStorage) {
                 var dt = new Date();
                 dt.setSeconds(dt.getSeconds() + tokenData.expiresIn);
                 tokenData.expiry = dt;
+                tokenData.email=bc.email;
                 $localStorage.userToken = tokenData;
                 bc.initialize();
             }, function (d) {
