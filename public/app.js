@@ -179,11 +179,12 @@ app.controller('bettingController', function ($http, $localStorage) {
         }
     }
     bc.timeNotOver=function(){
-        return new Date(bc.selectedMatch.date) > new Date();
+        let cutoff =new Date(bc.selectedMatch.date);
+        return cutoff.setMinutes(cutoff.getMinutes() + 2) > new Date();
     }
     bc.isValidBet =function(){
 
-       return (new Date(bc.selectedMatch.date) > new Date()) 
+       return bc.timeNotOver() 
        && bc.newBet  && bc.newBet.teamId && bc.newBet.amount;
     }
     bc.fetchMatches = function () {
@@ -198,8 +199,12 @@ app.controller('bettingController', function ($http, $localStorage) {
         bc.newBet.matchId = bc.selectedMatch.id;
         $http.post("/bet/add", bc.newBet)
             .then(function (res) {
+                bc.betsuccess =true;
                 bc.bets.push(res.data);
                 bc.fetchTransactions();
+            }, function(r){
+                bc.beterror=true;
+                bc.busy=false;
             })
     }
 });
