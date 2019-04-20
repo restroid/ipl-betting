@@ -4,7 +4,7 @@ import { MatchController } from './match.controller';
 import { MatchService } from './match.service';
 import { Match } from './match.entity';
 import { AuthModule } from '../auth/auth.module';
-import { Bet } from 'src/bet/bet.entity';
+import { Bet } from '../bet/bet.entity';
 
 @Module({
     imports: [AuthModule,TypeOrmModule.forFeature([Match]),TypeOrmModule.forFeature([Bet])],
