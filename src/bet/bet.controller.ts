@@ -15,7 +15,11 @@ export class BetController {
     async getAllMatches(): Promise<any[]> {
         return await this.betService.matches();
     }
-
+    @Get('matchesAdmin')
+    @Roles('Member')
+    async getAllMatchesAdmin(): Promise<any[]> {
+        return await this.betService.matchesAdmin();
+    }
     @Post('add')
     @Roles('Member')
     async create(@Body() bet: Bet,@Req() req) {

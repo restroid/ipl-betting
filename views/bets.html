@@ -127,7 +127,7 @@
             <label>Hisaab : &#8377;{{ bc.balanceAmount | number: 2}}
             </label>
             <ul>
-                <li ng-repeat="t in bc.transactions">{{ t.trans }} : &#8377;{{t.amount}}</li>
+                <li ng-repeat="t in bc.transactions">&#8377;{{t.amount}} : {{ t.trans }}</li>
             </ul>
         </div>
     </div>

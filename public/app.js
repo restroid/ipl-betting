@@ -61,12 +61,18 @@ app.controller('matchController', function ($http, $localStorage) {
     }
     mc.fetchMatches = function () {
         mc.fetchTeams();
-        $http.get("/bet/matches")
+        $http.get("/bet/matchesAdmin")
             .then(function (res) {
                 mc.matches = res.data;
             });
     }
-
+    mc.saveWinner = function(m)
+    {
+        $http.post("/match/setWinner", m)
+        .then(function (res) {
+            mc.fetchMatches();
+        })
+    }
     mc.addMatch = function () {
         $http.post("/match/add", mc.newMatch)
             .then(function (res) {

@@ -21,10 +21,10 @@ export class MatchController {
     async create(@Body() match: Match) {
         return this.matchService.add(match);
     }
-
     @Post('setWinner')
     @Roles('Admin')
-    async setWinner(@Body() winner: any) {
-        return this.matchService.setWinner(winner.matchId, winner.teamId);
+    async setWinner(@Body() match: Match) {
+        return this.matchService.setWinner(match);
     }
+   
 }
