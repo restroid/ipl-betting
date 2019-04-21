@@ -195,8 +195,7 @@ app.controller('bettingController', function ($http, $localStorage) {
         }
     }
     bc.timeNotOver=function(){
-        let cutoff =new Date(bc.selectedMatch.date);
-        return cutoff.setMinutes(cutoff.getMinutes() + 2) > new Date();
+        return bc.selectedMatch.date > new Date();
     }
     bc.isValidBet =function(){
 
