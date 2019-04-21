@@ -17,11 +17,16 @@ export class BetService {
 
     async findForUser(userId: number): Promise<any[]> {
         return await this.betRepository
-            .query(`select concat('t',t.id) id,t.remark trans,t.amount from transaction t where t.userId=` + userId + ` 
+            .query(`select concat('a',t.id) id,t.remark trans,t.amount 
+                from transaction t where t.userId=` + userId + ` 
+            union
+            select 'a9999' id,'---------------------Transactions Total--------------------' trans,sum(amount) amount 
+                from transaction where userId=` + userId + `
             union
                 select concat('b',b.id) id,
                 concat('From Bet ',b.amount, ' on ' ,t.name,
-                ' in ',t1.name,' vs ',t2.name,'=>Winner : ',t3.name,'@',ROUND(m.winnerRatio,2)) trans,
+                ' in ',t1.name,' vs ',t2.name,'=>Winner : ',IfNull(t3.name,'Undecided'),
+                '@',ROUND(m.winnerRatio,2)) trans,
                 ROUND(b.amount *(
                      case when m.winnerTeamId!=0 and m.winnerRatio =0 then 0 
                      when m.winnerTeamId=b.teamId then (0.9*m.winnerRatio) 
@@ -33,7 +38,9 @@ export class BetService {
                 join team t2 on t2.id=m.team2          
                 join team t on t.id=b.teamId
                 left outer join team t3 on t3.id=m.winnerTeamId
-            where b.userId=`+ userId);
+            where b.userId=`+ userId
+            +' order by id desc'
+            );
     }
     async matches(): Promise<any[]> {
         var matches = await this.matchRepository.find();

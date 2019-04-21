@@ -124,10 +124,10 @@
             </div>
         </form>
         <div ng-if="bc.user">
-            <label>Hisaab : &#8377;{{ bc.balanceAmount | number: 2}}
+            <label>Hisaab : <b>&#8377;{{ bc.balanceAmount | number: 2}}</b>
             </label>
             <ul>
-                <li ng-repeat="t in bc.transactions">&#8377;{{t.amount}} : {{ t.trans }}</li>
+                <li ng-repeat="t in bc.transactions"><b>&#8377;{{t.amount}}</b> : {{ t.trans }}</li>
             </ul>
         </div>
     </div>
