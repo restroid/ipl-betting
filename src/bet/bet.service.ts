@@ -20,9 +20,6 @@ export class BetService {
             .query(`select concat('a',t.id) id,t.remark trans,t.amount 
                 from transaction t where t.userId=` + userId + ` 
             union
-            select 'a9999' id,'---------------------Transactions Total--------------------' trans,sum(amount) amount 
-                from transaction where userId=` + userId + `
-            union
                 select concat('b',b.id) id,
                 concat('From Bet ',b.amount, ' on ' ,t.name,
                 ' in ',t1.name,' vs ',t2.name,'=>Winner : ',IfNull(t3.name,'Undecided'),
