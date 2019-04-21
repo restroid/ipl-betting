@@ -17,10 +17,10 @@ export class BetService {
 
     async findForUser(userId: number): Promise<any[]> {
         return await this.betRepository
-            .query(`select concat('a',t.id) id,t.remark trans,t.amount 
+            .query(`select -1*t.id id,t.remark trans,t.amount 
                 from transaction t where t.userId=` + userId + ` 
             union
-                select concat('b',b.id) id,
+                select b.id id,
                 concat('From Bet ',b.amount, ' on ' ,t.name,
                 ' in ',t1.name,' vs ',t2.name,'=>Winner : ',IfNull(t3.name,'Undecided'),
                 '@',ROUND(m.winnerRatio,2)) trans,
