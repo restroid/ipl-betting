@@ -36,11 +36,13 @@ export class BetService {
                 join team t on t.id=b.teamId
                 left outer join team t3 on t3.id=m.winnerTeamId
             where b.userId=`+ userId
-            +' order by id desc'
+                + ' order by id desc'
             );
     }
+
     async matches(): Promise<any[]> {
         var matches = await this.matchRepository.find();
+        matches = matches.sort((a, b) => a.date.getTime() - b.date.getTime());
         var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
         var now = new Date(indiaTime);
         now.setDate(now.getDate() - 1);//yesterday
@@ -70,7 +72,7 @@ export class BetService {
                 description: team1.name + " vs " + team2.name,
                 team1: team1,
                 team2: team2,
-                venue: m.venue, 
+                venue: m.venue,
                 date: m.date,
                 team1Total: t1Total,
                 team2Total: t2Total,
@@ -79,12 +81,11 @@ export class BetService {
         })
         return output;
     }
+
     async matchesAdmin(): Promise<any[]> {
         var matches = await this.matchRepository.find();
         var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-        //var now = new Date(indiaTime);
-        //now.setDate(now.getDate() - 10);//yesterday
-        //matches = matches.filter((m) => m.date > now)
+        matches = matches.sort((a, b) => a.date.getTime() - b.date.getTime());
         var teams = await this.teamRepository.find();
         var bets = await this.betRepository.find();
         var output = [];
@@ -106,10 +107,10 @@ export class BetService {
             });
             output.push({
                 id: m.id,
-                description: team1.name + " vs " + team2.name +" - " + m.date,
+                description: team1.name + " vs " + team2.name + " - " + m.date,
                 team1: team1,
                 team2: team2,
-                venue: m.venue, 
+                venue: m.venue,
                 date: m.date,
                 team1Total: t1Total,
                 team2Total: t2Total,
@@ -119,6 +120,7 @@ export class BetService {
         })
         return output;
     }
+
     async add(bet: Bet): Promise<Bet> {
         bet.id = null;
         var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
