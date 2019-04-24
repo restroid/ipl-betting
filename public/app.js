@@ -61,12 +61,18 @@ app.controller('matchController', function ($http, $localStorage) {
     }
     mc.fetchMatches = function () {
         mc.fetchTeams();
-        $http.get("/bet/matches")
+        $http.get("/bet/matchesAdmin")
             .then(function (res) {
                 mc.matches = res.data;
             });
     }
-
+    mc.saveWinner = function(m)
+    {
+        $http.post("/match/setWinner", m)
+        .then(function (res) {
+            mc.fetchMatches();
+        })
+    }
     mc.addMatch = function () {
         $http.post("/match/add", mc.newMatch)
             .then(function (res) {
@@ -114,11 +120,21 @@ app.controller('bettingController', function ($http, $localStorage) {
 
 
     bc.initialize = function () {
+        bc.error = null;
         if ($localStorage.userToken) {
-            $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
-            bc.user = $localStorage.userToken.user;
-            bc.fetchMatches();
-            bc.fetchTransactions();
+            if(new Date($localStorage.userToken.expiry) > new Date())
+            {
+                $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+                bc.user = $localStorage.userToken.user;
+                bc.fetchMatches();
+                bc.fetchTransactions();
+            }
+            else if($localStorage.userToken.email)
+            {
+                bc.email=$localStorage.userToken.email;
+                bc.loginUser();
+            }
+            
         }
     }
     bc.signout = function () {
@@ -126,11 +142,20 @@ app.controller('bettingController', function ($http, $localStorage) {
         bc.user = null;
     }
     bc.loginUser = function () {
+        bc.error = null;
         $http.get("/auth/token/" + bc.email)
             .then(function (res) {
                 bc.user = res.data.user;
-                $localStorage.userToken = res.data;
+                var tokenData = res.data;
+                var dt = new Date();
+                dt.setSeconds(dt.getSeconds() + tokenData.expiresIn);
+                tokenData.expiry = dt;
+                tokenData.email=bc.email;
+                $localStorage.userToken = tokenData;
                 bc.initialize();
+            }, function (d) {
+                console.log(d);
+                bc.error = "Email not found! Please contact the bookie!";
             });
     }
 
@@ -138,14 +163,45 @@ app.controller('bettingController', function ($http, $localStorage) {
         $http.get("/bet/myTrans")
             .then(function (res) {
                 bc.transactions = res.data;
-                bc.balanceAmount=0;
+                bc.balanceAmount = 0;
                 bc.transactions.forEach(t => {
-                    bc.balanceAmount+=parseFloat(t.amount);
+                    bc.balanceAmount += parseFloat(t.amount);
                 });
             });
 
     }
+    bc.getTeamRatio = function (amount, isWinning) {
+        let winningAmount = 0;
+        if (bc.newBet && bc.newBet.amount)
+            {
+                winningAmount = bc.newBet.amount;
+               amount= amount + (isWinning?winningAmount:0);
+            }
 
+        return (bc.selectedMatch.matchTotal + winningAmount - amount) / amount;
+    }
+    
+    bc.getWinningAmount = function () {
+        if (bc.newBet && bc.newBet.amount && bc.newBet.teamId == bc.selectedMatch.team1.id) {
+            ratio = bc.getTeamRatio(bc.selectedMatch.team1Total,true);
+            return ratio * bc.newBet.amount * .9;
+        }
+        else if (bc.newBet && bc.newBet.amount && bc.newBet.teamId == bc.selectedMatch.team2.id){
+            ratio = bc.getTeamRatio( bc.selectedMatch.team2Total,true);
+            return ratio * bc.newBet.amount * .9;
+        }
+        else{
+            return 0;
+        }
+    }
+    bc.timeNotOver=function(){
+        return new Date(bc.selectedMatch.date) > new Date();
+    }
+    bc.isValidBet =function(){
+
+       return bc.timeNotOver() 
+       && bc.newBet  && bc.newBet.teamId && bc.newBet.amount;
+    }
     bc.fetchMatches = function () {
 
         $http.get("/bet/matches")
@@ -158,8 +214,12 @@ app.controller('bettingController', function ($http, $localStorage) {
         bc.newBet.matchId = bc.selectedMatch.id;
         $http.post("/bet/add", bc.newBet)
             .then(function (res) {
+                bc.betsuccess =true;
                 bc.bets.push(res.data);
                 bc.fetchTransactions();
+            }, function(r){
+                bc.beterror=true;
+                bc.busy=false;
             })
     }
 });

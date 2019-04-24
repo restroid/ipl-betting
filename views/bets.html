@@ -23,6 +23,7 @@
             </a>
             <button ng-if="bc.user" class="btn btn-outline my-2 my-sm-0" ng-click="bc.signout()">Sign Out</button>
         </nav>
+
         <form ng-hide="bc.user">
 
             <div class="form-group">
@@ -32,6 +33,7 @@
             <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
                 ng-click="bc.loginUser()">Login</button>
         </form>
+        <span class="alert alert-danger" ng-if="bc.error">{{bc.error}}</span>
         <form ng-if="bc.user">
             <label>Welcome {{bc.user.fullName || bc.user.name}}</label>
             <hr />
@@ -44,7 +46,9 @@
             </div>
             <hr />
             <div ng-if="bc.selectedMatch">
-                <div class="text-center"><b>{{bc.selectedMatch.venue}}</b> on <b>{{bc.selectedMatch.date}}</b></div>
+                <div class="text-center"><b>{{bc.selectedMatch.venue}}</b> on
+                    <b>{{bc.selectedMatch.date | date: "dd-MMM @ HH:mm"}}</b></div>
+                <br />
                 <div class="row">
                     <div class="col-6">
                         <div class="panel">
@@ -52,8 +56,10 @@
                                 {{bc.selectedMatch.team1.name}}
                             </div>
                             <div class="panel-body">
-                                Total: {{bc.selectedMatch.team1Total}}
-                                Ratio: {{bc.selectedMatch.team2Total/bc.selectedMatch.team1Total | number: 2}}
+                                Total:
+                                {{bc.selectedMatch.team1Total+(bc.newBet && bc.selectedMatch.team1.id==bc.newBet.teamId?bc.newBet.amount:0)}}
+                                Ratio:
+                                {{bc.getTeamRatio(bc.selectedMatch.team1Total,bc.newBet && bc.selectedMatch.team1.id==bc.newBet.teamId)| number: 2}}
                             </div>
                         </div>
                     </div>
@@ -63,15 +69,23 @@
                                 {{bc.selectedMatch.team2.name}}
                             </div>
                             <div class="panel-body">
-                                Total: {{bc.selectedMatch.team2Total}}
-                                Ratio: {{bc.selectedMatch.team1Total/bc.selectedMatch.team2Total | number: 2}}
+                                Total:
+                                {{bc.selectedMatch.team2Total + (bc.newBet && bc.selectedMatch.team2.id==bc.newBet.teamId?bc.newBet.amount:0)}}
+                                Ratio:
+                                {{bc.getTeamRatio(bc.selectedMatch.team2Total,bc.newBet && bc.selectedMatch.team2.id==bc.newBet.teamId) | number: 2}}
                             </div>
                         </div>
                     </div>
 
                 </div>
                 <hr />
-                <div class="form-row">
+                <div class="text-center">
+                    <div class="text-center" ng-hide="bc.timeNotOver()">Time Over</div>
+                    <div class="alert alert-danger" ng-show="(bc.balanceAmount < -200)">Please pay to bet</div>
+                    <div class="alert alert-warning" ng-show="(bc.balanceAmount < -100) && bc.balanceAmount > -200">
+                        Please pay asap</div>
+                </div>
+                <div class="form-row" ng-if="bc.timeNotOver() && (bc.balanceAmount > -200)">
                     <div class="form-group col-6">
                         <label> Select Team:
 
@@ -93,22 +107,28 @@
 
 
                     </div>
+                    <div class="form-group col-12 text-center">
+                        <span class="alert alert-success" ng-show="bc.betsuccess">Bet placed successfully. Amount: {{bc.newBet.amount}}</span>
+                        <span class="alert alert-danger" ng-show="bc.beterror">Error placing the bet. please try again</span>
+                        <br /><b class="center">Win: {{bc.getWinningAmount() | number: 2}}</b>
+                    </div>
+
                 </div>
 
-                <div class="form-group">
-                    <button type="button" class="btn btn-primary mb-2 float-right" ng-disabled="bc.busy"
+                <div class="form-group" ng-if="bc.isValidBet()">
+                    <button type="button" class="btn btn-primary mb-2 float-right" ng-hide="bc.betsuccess" ng-disabled="bc.busy"
                         ng-click="bc.addBet()">Confirm</button>
                 </div>
                 <br />
-                <hr/>
+                <hr />
             </div>
         </form>
         <div ng-if="bc.user">
-        <label>Hisaab : &#8377;{{ bc.balanceAmount }} 
+            <label>Hisaab : <b>&#8377;{{ bc.balanceAmount | number: 2}}</b>
             </label>
-        <ul>
-            <li ng-repeat="t in bc.transactions">{{ t.trans }} : &#8377;{{t.amount}}</li>
-        </ul>
+            <ul>
+                <li ng-repeat="t in bc.transactions"><b>&#8377;{{t.amount}}</b> : {{ t.trans }}</li>
+            </ul>
         </div>
     </div>
 </body>
