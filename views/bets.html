@@ -139,15 +139,13 @@
                     <th>Bet On</th>
                     <th>Bet Amount</th>
                     <th>Winner</th>
-                    <th>Winner Ratio</th>
                 </tr>
                 <tr ng-repeat="t in bc.transactions | filter :'bet': t.ttype " ng-class="{'table-success': t.amount>0, 'table-danger': (t.amount<0 && t.winnerRatio >0), 'table-warning': t.winnerRatio==0}">
                     <td class="font-weight-bold">{{t.amount}}</td>
                     <td>{{t.matchName}}</td>
                     <td>{{t.betOn}}</td>
                     <td>{{t.betAmount}}</td>
-                    <td>{{t.winner}}</td>
-                    <td>{{t.winnerRatio}}</td>
+                    <td>{{t.winner}}@{{t.winnerRatio}}</td>
 
                 </tr>
             </table>
