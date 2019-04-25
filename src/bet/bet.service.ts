@@ -17,18 +17,31 @@ export class BetService {
 
     async findForUser(userId: number): Promise<any[]> {
         return await this.betRepository
-            .query(`select -1*t.id id,t.remark trans,t.amount 
+            .query(`select -1*t.id id,
+            
+            t.remark matchName,
+                'fake' winner,
+                0.0 winnerRatio,
+                t.amount betAmount ,
+                t.remark betOn,
+            t.remark trans,t.amount , 'trans' ttype
                 from transaction t where t.userId=` + userId + ` 
             union
-                select b.id id,
+                select b.id id, concat (t1.name,' vs ',t2.name) matchName ,
+                IfNull(t3.name,'Undecided') winner,
+                ROUND(m.winnerRatio,2) winnerRatio,
+                b.amount betAmount ,
+                t.name betOn,
                 concat('From Bet ',b.amount, ' on ' ,t.name,
                 ' in ',t1.name,' vs ',t2.name,'=>Winner : ',IfNull(t3.name,'Undecided'),
                 '@',ROUND(m.winnerRatio,2)) trans,
+                
                 ROUND(b.amount *(
                      case when m.winnerTeamId!=0 and m.winnerRatio =0 then 0 
                      when m.winnerTeamId=b.teamId then (0.9*m.winnerRatio) 
                      else -1 end),2) 
-                amount
+                amount,
+                'bet' ttype
                  from bet b  
                 join \`match\` m on b.matchId=m.id
                 join team t1 on t1.id=m.team1
