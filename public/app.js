@@ -162,6 +162,7 @@ app.controller('bettingController', function ($http, $localStorage) {
     bc.fetchTransactions = function () {
         $http.get("/bet/myTrans")
             .then(function (res) {
+                console.log(res);
                 bc.transactions = res.data;
                 bc.balanceAmount = 0;
                 bc.transactions.forEach(t => {

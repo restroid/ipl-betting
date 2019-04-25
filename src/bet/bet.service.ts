@@ -28,12 +28,12 @@ export class BetService {
                 from transaction t where t.userId=` + userId + ` 
             union
                 select b.id id, concat (t1.name,' vs ',t2.name) matchName ,
-                IfNull(t3.name,'Undecided') winner,
+                IfNull(t3.name,'-') winner,
                 ROUND(m.winnerRatio,2) winnerRatio,
                 b.amount betAmount ,
                 t.name betOn,
                 concat('From Bet ',b.amount, ' on ' ,t.name,
-                ' in ',t1.name,' vs ',t2.name,'=>Winner : ',IfNull(t3.name,'Undecided'),
+                ' in ',t1.name,' vs ',t2.name,'=>Winner : ',IfNull(t3.name,'-'),
                 '@',ROUND(m.winnerRatio,2)) trans,
                 
                 ROUND(b.amount *(

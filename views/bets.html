@@ -16,7 +16,7 @@
 <body ng-app="app">
 
     <div class="container" ng-controller="bettingController as bc" ng-init="bc.initialize()">
-        <nav class="navbar navbar-light bg-light">
+        <nav class="navbar navbar-dark bg-dark">
             <a class="navbar-brand" href="#">
                 <img src="/images/IPL8.jpg" width="30" height="30" class="d-inline-block align-top" alt="">
                 Betting chalu hai..
@@ -108,27 +108,63 @@
 
                     </div>
                     <div class="form-group col-12 text-center">
-                        <span class="alert alert-success" ng-show="bc.betsuccess">Bet placed successfully. Amount: {{bc.newBet.amount}}</span>
-                        <span class="alert alert-danger" ng-show="bc.beterror">Error placing the bet. please try again</span>
+                        <span class="alert alert-success" ng-show="bc.betsuccess">Bet placed successfully. Amount:
+                            {{bc.newBet.amount}}</span>
+                        <span class="alert alert-danger" ng-show="bc.beterror">Error placing the bet. please try
+                            again</span>
                         <br /><b class="center">Win: {{bc.getWinningAmount() | number: 2}}</b>
                     </div>
 
                 </div>
 
                 <div class="form-group" ng-if="bc.isValidBet()">
-                    <button type="button" class="btn btn-primary mb-2 float-right" ng-hide="bc.betsuccess" ng-disabled="bc.busy"
-                        ng-click="bc.addBet()">Confirm</button>
+                    <button type="button" class="btn btn-primary mb-2 float-right" ng-hide="bc.betsuccess"
+                        ng-disabled="bc.busy" ng-click="bc.addBet()">Confirm</button>
                 </div>
                 <br />
                 <hr />
             </div>
         </form>
         <div ng-if="bc.user">
-            <label>Hisaab : <b>&#8377;{{ bc.balanceAmount | number: 2}}</b>
-            </label>
-            <ul>
+            <h4>Hisaab : <b>&#8377;{{ bc.balanceAmount | number: 2}}</b>
+            </h4>
+            <!-- <ul>
                 <li ng-repeat="t in bc.transactions"><b>&#8377;{{t.amount}}</b> : {{ t.trans }}</li>
-            </ul>
+            </ul> -->
+            <table class="table table-condensed table-bordered text-center">
+                    <thead><h5>Bets</h5></thead>
+                <tr class="thead-dark">
+                    <th>Amount</th>
+                    <th>Match</th>
+                    <th>Bet On</th>
+                    <th>Bet Amount</th>
+                    <th>Winner</th>
+                    <th>Winner Ratio</th>
+                </tr>
+                <tr ng-repeat="t in bc.transactions | filter :'bet': t.ttype " ng-class="{'table-success': t.amount>0, 'table-danger': (t.amount<0 && t.winnerRatio >0), 'table-warning': t.winnerRatio==0}">
+                    <td class="font-weight-bold">{{t.amount}}</td>
+                    <td>{{t.matchName}}</td>
+                    <td>{{t.betOn}}</td>
+                    <td>{{t.betAmount}}</td>
+                    <td>{{t.winner}}</td>
+                    <td>{{t.winnerRatio}}</td>
+
+                </tr>
+            </table>
+            <table class="table table-condensed table-bordered">
+                <thead><h5>Transactions</h5></thead>
+                <tr class="thead-dark">
+                    <th>Amount</th>
+                    <th>Description</th>
+                    
+                </tr>
+                <tr ng-repeat="t in bc.transactions | filter :'trans': t.ttype " ng-class="{'table-success': t.amount>0, 'table-danger': (t.amount<0)}">
+                    <td class="font-weight-bold">{{t.amount}}</td>
+                    <td>{{t.matchName}}</td>
+                   
+
+                </tr>
+            </table>
         </div>
     </div>
 </body>
