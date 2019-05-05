@@ -35,8 +35,51 @@
         </form>
         <div v-if="!!user">
 
+            <div class="card card-body" v-if="!!selectedMatch">
+                <h5 class="card-title">{{selectedMatch.description}}</h5>
+                <h6 class="card-subtitle">{{selectedMatch.venue}}</h6>
+                <h6 class="card-subtitle">{{new Date(selectedMatch.date)}}</h6>
 
-            <all-transactions v-if="false"></all-transactions>
+                <div class="row">
+                    <div class="col m-2" v-for="bet in selectedMatch.bets">
+                        <div v-on:click="selectedTeam=bet"
+                            v-bind:class="[bet===selectedTeam ? 'border-primary' : 'border-secondary', 'border', 'rounded', 'p-3','bg-light']">
+                            <h6 class="text-center">{{bet.name}}</h6>
+                            <div class="text-center">{{bet.amount}}</div>
+                            <div class="text-center">{{2.4}}</div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div v-if="!!selectedTeam" class="text-center p-2">
+                    <button class="m-1" v-on:click="betAmount=amt"
+                        v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
+                        v-for="amt in betAmounts">{{amt}}</button>
+                    <div class="row">
+                        <div class="col-3">&nbsp;</div>
+                        <div class="col-3">
+                            <input class="form-control" type="number" v-model="betAmount" name="betAmount" />
+                        </div>
+                        <div class="col-3 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
+                    </div>
+
+
+                </div>
+                <button type="button" class="btn btn-primary mb-2 float-right" v-on:click="addBet">Confirm</button>
+            </div>
+            <div>
+                Other matches:
+                <div class="card card-body" v-for="m in otherMatches">
+                    <h5 class="card-title">{{m.description}}</h5>
+
+                    <div v-for="b in m.bets">
+                        <span>{{b.name}}</span>
+                        <span>{{b.amount}}</span>
+                    </div>
+                </div>
+            </div>
+            <all-transactions v-if="true"></all-transactions>
 
 
         </div>
@@ -49,8 +92,19 @@
             user: null,
             email: "apurv@flick2know.com",
             busy: false,
-            error: null
-            
+            error: null,
+            matches: [],
+
+            selectedMatch: null,
+            selectedTeam: null,
+            betAmount: 0,
+            betAmounts: [10, 20, 50, 100],
+            otherMatches: []
+        },
+        computed: {
+            winningAmount: function () { },
+
+
         },
         mounted() {
             if (localStorage.accessToken) {
@@ -58,18 +112,54 @@
                     //valid session
                     axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.accessToken;
                     this.user = JSON.parse(localStorage.user)
-                   
+                    this.fetchMatches()
                 }
                 else if (localStorage.email) {
                     this.email = localStorage.email;
-                    bc.loginUser();
+                    this.loginUser();
                 }
             }
         },
         methods: {
+
             signout: function () {
                 localStorage.clear()
                 this.user = null;
+            },
+            fetchMatches: function () {
+                let that = this;
+                axios.get("/bet/matches")
+                    .then(function (res) {
+                        that.matches = res.data;
+                        let now = new Date();
+                        that.selectedMatch =
+                            that.matches.find(m => new Date(m.date) > now);
+
+                        that.otherMatches = that.matches.filter(m => new Date(m.date) <= now);
+                    });
+            },
+            isBetValid: function () {
+                return !!this.selectedMatch && !!this.selectedTeam && !!this.betAmount
+                    && this.betAmount >= 10 && this.betAmount <= 100
+            },
+            addBet: function () {
+                if (this.isBetValid()) {
+                    this.busy = true;
+                    let newBet = {
+                        teamId: 0,
+                        matchId: this.selectedMatch.id,
+                        BetOn: this.selectedTeam.name,
+                        amount: this.betAmount
+                    }
+                    axios.post("/bet/add", newBet)
+                        .then(function (res) {
+                            console.log(res);
+                            // bc.betsuccess = true;
+                            // bc.bets.push(res.data);
+                            // bc.fetchTransactions();
+                        })
+                }
+
             },
             loginUser: function () {
                 console.log(this.email);
@@ -89,14 +179,13 @@
                         localStorage.email = that.email;
                         localStorage.user = JSON.stringify(res.data.user);
 
-                        that.fetchTransactions();
 
                     }).catch(function (d) {
                         console.log(d);
                         this.error = "Email not found! Please contact the bookie!";
                     });
             }
-            
+
         },
     })
 
