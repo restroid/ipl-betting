@@ -34,12 +34,11 @@
                 v-on:click="loginUser">Login</button>
         </form>
         <div v-if="!!user">
-            <h4>Hisaab : <b>&#8377;{{ balanceAmount}}</b>
-            </h4>
 
-            <my-bets v-bind:bets="bets"></my-bets>
-            <my-transactions v-bind:transactions="transactions"></my-transactions>
-            
+
+            <all-transactions v-if="false"></all-transactions>
+
+
         </div>
     </div>
 </body>
@@ -50,10 +49,8 @@
             user: null,
             email: "apurv@flick2know.com",
             busy: false,
-            error: null,
-            transactions: [],
-            bets: [],
-            balanceAmount: 0.0
+            error: null
+            
         },
         mounted() {
             if (localStorage.accessToken) {
@@ -61,7 +58,7 @@
                     //valid session
                     axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.accessToken;
                     this.user = JSON.parse(localStorage.user)
-                    this.fetchTransactions();
+                   
                 }
                 else if (localStorage.email) {
                     this.email = localStorage.email;
@@ -98,25 +95,8 @@
                         console.log(d);
                         this.error = "Email not found! Please contact the bookie!";
                     });
-            },
-            fetchTransactions: function () {
-                let that = this;
-                axios.get("/bet/myTrans")
-                    .then(function (res) {
-                        console.log(res);
-                        let allTransactions = res.data;
-                        let balanceAmount = 0;
-                        allTransactions.forEach(t => {
-                            balanceAmount += parseFloat(t.amount);
-                        });
-
-                        that.balanceAmount = balanceAmount.toFixed(2);
-                        that.transactions = allTransactions.filter(t => t.ttype === 'trans')
-                        that.bets = allTransactions.filter(t => t.ttype === 'bet')
-
-                    });
-
             }
+            
         },
     })
 

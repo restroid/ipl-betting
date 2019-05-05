@@ -1,3 +1,46 @@
+
+Vue.component('all-transactions', {
+    
+    data : function(){
+        return {
+            transactions: [],
+            bets: [],
+            balanceAmount: 0.0
+        }
+    },
+    mounted() {
+        console.log("mounted")
+        this.fetchTransactions()
+    },
+    methods: {
+        fetchTransactions: function () {
+            let that = this;
+            axios.get("/bet/myTrans")
+                .then(function (res) {
+                    console.log(res);
+                    let allTransactions = res.data;
+                    let balanceAmount = 0;
+                    allTransactions.forEach(t => {
+                        balanceAmount += parseFloat(t.amount);
+                    });
+
+                    that.balanceAmount = balanceAmount.toFixed(2);
+                    that.transactions = allTransactions.filter(t => t.ttype === 'trans')
+                    that.bets = allTransactions.filter(t => t.ttype === 'bet')
+
+                });
+
+        }
+    },
+    template: `
+    <div>
+    <h4>Hisaab : <b>&#8377;{{ balanceAmount}}</b>
+            </h4>
+        <my-bets v-bind:bets="bets"></my-bets>
+        <my-transactions v-bind:transactions="transactions"></my-transactions>
+    </div>
+    `
+})
 Vue.component('my-bets', {
     props: ['bets'],
     template: `
