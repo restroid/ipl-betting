@@ -10,6 +10,8 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="/vue-components/bets.component.js"></script>
+
 </head>
 
 <body>
@@ -35,42 +37,9 @@
             <h4>Hisaab : <b>&#8377;{{ balanceAmount}}</b>
             </h4>
 
-            <table class="table table-condensed table-bordered text-center">
-                <thead>
-                    <h5>Bets</h5>
-                </thead>
-                <tr class="thead-dark">
-                    <th>Amount</th>
-                    <th>Match</th>
-                    <th>Bet On</th>
-                    <th>Winner</th>
-                </tr>
-                <tr v-for="t in bets"
-                    v-bind:class="{'table-success': t.amount>0, 'table-danger': (t.amount<0 && t.winnerRatio >0), 'table-warning': t.winnerRatio==0}">
-                    <td class="font-weight-bold">{{t.amount}}</td>
-                    <td>{{t.matchName}}</td>
-                    <td>{{t.betAmount}}@{{t.betOn}}</td>
-                    <td>{{t.winner}}<span ng-if="t.winner !='-'">@{{t.winnerRatio}}</span></td>
-
-                </tr>
-            </table>
-            <table class="table table-condensed table-bordered">
-                <thead>
-                    <h5>Transactions</h5>
-                </thead>
-                <tr class="thead-dark">
-                    <th>Amount</th>
-                    <th>Description</th>
-
-                </tr>
-                <tr v-for="t in transactions"
-                    v-bind:class="{'table-success': t.amount>0, 'table-danger': (t.amount<0)}">
-                    <td class="font-weight-bold">{{t.amount}}</td>
-                    <td>{{t.matchName}}</td>
-
-
-                </tr>
-            </table>
+            <my-bets v-bind:bets="bets"></my-bets>
+            <my-transactions v-bind:transactions="transactions"></my-transactions>
+            
         </div>
     </div>
 </body>
@@ -150,6 +119,7 @@
             }
         },
     })
+
 </script>
 
 </html>
