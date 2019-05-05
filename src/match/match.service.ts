@@ -21,12 +21,14 @@ export class MatchService {
         match.id = null;
         match.winnerRatio = 0;
         match.winnerTeamId = 0;
+        match.Winner="";
         return await this.matchRepository.save(match);
     }
     async setWinner(match: Match): Promise<Match> {
         //todo: set match ratio
         var matchDb = await this.matchRepository.findOne(match.id);
         matchDb.winnerTeamId = match.winnerTeamId
+        matchDb.Winner= match.Winner
         matchDb.winnerRatio = await this.getRatio(match.id, match.winnerTeamId);
 
         return await this.matchRepository.save(matchDb);

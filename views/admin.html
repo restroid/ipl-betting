@@ -50,20 +50,20 @@
       <div class="form-group row" ng-repeat="m in mc.matches">
           <label class="form-control-plaintext">{{ m.description }}</label>
          <label class="col-2">Winner:</label>
-          <select class="form-control col-2 mb-2" ng-model="m.winnerTeamId">
-              <option ng-value="m.team1.id">{{m.team1.name}}</option>
-              <option ng-value="m.team2.id">{{m.team2.name}}</option>
+          <select class="form-control col-2 mb-2" ng-model="m.Winner">
+              <option ng-value="m.team1.name">{{m.team1.name}}</option>
+              <option ng-value="m.team2.name">{{m.team2.name}}</option>
           </select>
           <button class="btn btn-sm btn-primary mb-2" ng-click=mc.saveWinner(m)>Save</button>
         </div>
     </ul>
     <label>Team 1:
-      <select type="text" ng-model="mc.newMatch.team1" ng-options="t.id as t.name for t in mc.teams">
+      <select type="text" ng-model="mc.newMatch.team1" ng-options="t as t.name for t in mc.teams">
       </select>
     </label>
     VS
     <label>Team 2:
-      <select type="text" ng-model="mc.newMatch.team2" ng-options="t.id as t.name for t in mc.teams">
+      <select type="text" ng-model="mc.newMatch.team2" ng-options="t as t.name for t in mc.teams">
 
       </select>
 

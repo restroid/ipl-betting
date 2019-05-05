@@ -14,10 +14,10 @@ export class BetService {
         private readonly matchRepository: Repository<Match>,
         @InjectRepository(Team)
         private readonly teamRepository: Repository<Team>) { }
-        
-        async balanceForUser(userId: number): Promise<any> {
-            var amount= await this.betRepository
-                .query(`Select ROUND(sum(amount),2) amount from
+
+    async balanceForUser(userId: number): Promise<any> {
+        var amount = await this.betRepository
+            .query(`Select ROUND(sum(amount),2) amount from
                     (select t.amount 
                     from transaction t where t.userId=` + userId + ` 
                 union
@@ -32,17 +32,15 @@ export class BetService {
                     join team t2 on t2.id=m.team2          
                     join team t on t.id=b.teamId
                     left outer join team t3 on t3.id=m.winnerTeamId
-                where b.userId=`+ userId+') c'
-                );
+                where b.userId=`+ userId + ') c'
+            );
 
-            if(amount.length>0)
-            {
-                return amount[0].amount;
-            }else
-            {
-                return 0;
-            }
+        if (amount.length > 0) {
+            return amount[0].amount;
+        } else {
+            return 0;
         }
+    }
 
     async findForUser(userId: number): Promise<any[]> {
         return await this.betRepository
@@ -86,8 +84,8 @@ export class BetService {
         if (!all) {
             var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
             var now = new Date(indiaTime);
-            now.setDate(now.getDate() - 1);//yesterday
-            matches = matches.filter((m) => m.date > now).slice(0, 3);
+            now.setDate(now.getDate() - 2);//yesterday
+            matches = matches.filter((m) => m.date > now).slice(0, 5);
         }
 
         var bets = await this.betRepository.find();
@@ -105,7 +103,7 @@ export class BetService {
                     }
                 })
             });
- 
+
             output.push({
                 id: m.id,
                 description: m.Name,
@@ -113,6 +111,7 @@ export class BetService {
                 team2: bets2[1],
                 bets: bets2,
                 venue: m.venue,
+                Winner: m.Winner,
                 date: m.date,
                 team1Total: bets2[0].amount,
                 team2Total: bets2[1].amount,
