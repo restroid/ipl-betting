@@ -17,8 +17,7 @@ export class BetService {
 
     async findForUser(userId: number): Promise<any[]> {
         return await this.betRepository
-            .query(`select -1*t.id id,
-            
+            .query(`select -1*t.id id,       
             t.remark matchName,
                 'fake' winner,
                 0.0 winnerRatio,
@@ -52,29 +51,32 @@ export class BetService {
                 + ' order by id desc'
             );
     }
-
-    async matches(): Promise<any[]> {
+    async matchesDetails(all : boolean): Promise<any[]> {
         var matches = await this.matchRepository.find();
         matches = matches.sort((a, b) => a.date.getTime() - b.date.getTime());
-        var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-        var now = new Date(indiaTime);
-        now.setDate(now.getDate() - 1);//yesterday
-        matches = matches.filter((m) => m.date > now).slice(0, 3)
-        var teams = await this.teamRepository.find();
+        if(!all)
+        {
+            var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+            var now = new Date(indiaTime);
+            now.setDate(now.getDate() - 1);//yesterday
+            matches = matches.filter((m) => m.date > now).slice(0, 3);
+        }
+       
         var bets = await this.betRepository.find();
         var output = [];
         matches.forEach((m) => {
-            var team1 = teams.find((t) => t.id == m.team1);
-            var team2 = teams.find((t) => t.id == m.team2);
+            var betSides = JSON.parse(m.Bets);
+            var team1 = betSides[0];
+            var team2 = betSides[1];
             var matchTransactions = bets.filter((b) => b.matchId == m.id);
             var t1Total = 0;
             var matchTotal = 0;
             var t2Total = 0;
             matchTransactions.forEach((t) => {
-                if (t.teamId == team1.id) {
+                if (t.BetOn == team1) {
                     t1Total += t.amount;
                 }
-                if (t.teamId == team2.id) {
+                if (t.BetOn == team2.id) {
                     t2Total += t.amount;
                 }
                 matchTotal += t.amount;
@@ -82,9 +84,10 @@ export class BetService {
 
             output.push({
                 id: m.id,
-                description: team1.name + " vs " + team2.name,
-                team1: team1,
-                team2: team2,
+                description: m.Name,
+                team1: {name:team1},
+                team2: {name: team2},
+                bets: betSides,
                 venue: m.venue,
                 date: m.date,
                 team1Total: t1Total,
@@ -94,44 +97,12 @@ export class BetService {
         })
         return output;
     }
+    async matches(): Promise<any[]> {
+        return await this.matchesDetails(false);
+    }
 
     async matchesAdmin(): Promise<any[]> {
-        var matches = await this.matchRepository.find();
-        var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-        matches = matches.sort((a, b) => a.date.getTime() - b.date.getTime());
-        var teams = await this.teamRepository.find();
-        var bets = await this.betRepository.find();
-        var output = [];
-        matches.forEach((m) => {
-            var team1 = teams.find((t) => t.id == m.team1);
-            var team2 = teams.find((t) => t.id == m.team2);
-            var matchTransactions = bets.filter((b) => b.matchId == m.id);
-            var t1Total = 0;
-            var matchTotal = 0;
-            var t2Total = 0;
-            matchTransactions.forEach((t) => {
-                if (t.teamId == team1.id) {
-                    t1Total += t.amount;
-                }
-                if (t.teamId == team2.id) {
-                    t2Total += t.amount;
-                }
-                matchTotal += t.amount;
-            });
-            output.push({
-                id: m.id,
-                description: team1.name + " vs " + team2.name + " - " + m.date,
-                team1: team1,
-                team2: team2,
-                venue: m.venue,
-                date: m.date,
-                team1Total: t1Total,
-                team2Total: t2Total,
-                matchTotal: matchTotal,
-                winnerTeamId: m.winnerTeamId
-            });
-        })
-        return output;
+        return await this.matchesDetails(true);
     }
 
     async add(bet: Bet): Promise<Bet> {

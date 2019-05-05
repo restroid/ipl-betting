@@ -7,7 +7,16 @@ export class Match {
 
   @Column()
   team1: number;
+  
+  @Column()
+  Bets: string;
 
+  @Column()
+  Name: string;
+
+  @Column()
+  Winner: string;
+  
   @Column()
   team2: number;
 
