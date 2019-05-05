@@ -32,4 +32,10 @@ export class BetController {
         return await this.betService.findForUser(req.user.id);
     }
 
+        @Get('myAmount')
+    @Roles('Member')
+    async myAmount(@Req() req):Promise<any[]>{
+        return await this.betService.balanceForUser(req.user.id);
+    }
+
 }

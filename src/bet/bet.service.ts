@@ -14,6 +14,35 @@ export class BetService {
         private readonly matchRepository: Repository<Match>,
         @InjectRepository(Team)
         private readonly teamRepository: Repository<Team>) { }
+        
+        async balanceForUser(userId: number): Promise<any> {
+            var amount= await this.betRepository
+                .query(`Select ROUND(sum(amount),2) amount from
+                    (select t.amount 
+                    from transaction t where t.userId=` + userId + ` 
+                union
+                    select sum(b.amount *(
+                         case when m.Winner is not null and m.winnerRatio =0 then 0 
+                         when m.Winner=b.BetOn then (0.9*m.winnerRatio) 
+                         else -1 end)) 
+                    amount
+                     from bet b  
+                    join \`match\` m on b.matchId=m.id
+                    join team t1 on t1.id=m.team1
+                    join team t2 on t2.id=m.team2          
+                    join team t on t.id=b.teamId
+                    left outer join team t3 on t3.id=m.winnerTeamId
+                where b.userId=`+ userId+') c'
+                );
+
+            if(amount.length>0)
+            {
+                return amount[0].amount;
+            }else
+            {
+                return 0;
+            }
+        }
 
     async findForUser(userId: number): Promise<any[]> {
         return await this.betRepository
