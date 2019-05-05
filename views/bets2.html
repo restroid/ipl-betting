@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>App v2</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">
+                <img src="/images/IPL8.jpg" width="30" height="30" class="d-inline-block align-top" alt="">
+                Betting chalu hai..
+            </a>
+            <button v-if="!!user" class="btn btn-outline my-2 my-sm-0" v-on:click="signout">Sign Out</button>
+        </nav>
+        <span v-if="!!user">Welome back {{user.fullName}}!!</span>
+        <form v-if="!user">
+
+            <div class="form-group">
+                <label> Enter your email:</label>
+                <input type="email" class="form-control" v-model="email" />
+            </div>
+            <button type="button" class="btn btn-primary mb-2 float-right" v-bind:disabled="busy"
+                v-on:click="loginUser">Login</button>
+        </form>
+
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            user: null,
+            email: "apurv@flick2know.com",
+            busy: false,
+            error: null
+        },
+        mounted() {
+            if (localStorage.accessToken) {
+                if (new Date(localStorage.token_expiry) > new Date()) {
+                    //valid session
+                    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.accessToken;
+                    this.user = JSON.parse(localStorage.user)
+                }
+                else {
+                    //expired token
+                }
+            }
+        },
+        methods: {
+            signout: function () {
+                localStorage.clear()
+                this.user = null;
+            },
+            loginUser: function () {
+                console.log(this.email);
+                this.error = null;
+                let that = this;
+                axios.get("/auth/token/" + this.email)
+                    .then(function (res) {
+                        console.log(res);
+                        that.user = res.data.user;
+                        var tokenData = res.data;
+
+
+                        var dt = new Date();
+                        dt.setSeconds(dt.getSeconds() + tokenData.expiresIn);
+                        localStorage.token_expiry = dt;
+                        localStorage.accessToken = tokenData.accessToken;
+                        localStorage.email = that.email;
+                        localStorage.user = JSON.stringify(res.data.user);
+                        //bc.initialize();
+                    }).catch(function (d) {
+                        console.log(d);
+                        this.error = "Email not found! Please contact the bookie!";
+                    });
+            }
+        },
+    })
+</script>
+
+</html>
