@@ -26,18 +26,18 @@ export class BetService {
             t.remark trans,t.amount , 'trans' ttype
                 from transaction t where t.userId=` + userId + ` 
             union
-                select b.id id, concat (t1.name,' vs ',t2.name) matchName ,
-                IfNull(t3.name,'-') winner,
+                select b.id id, m.Name matchName ,
+                IfNull(m.Winner,'-') winner,
                 ROUND(m.winnerRatio,2) winnerRatio,
                 b.amount betAmount ,
-                t.name betOn,
-                concat('From Bet ',b.amount, ' on ' ,t.name,
-                ' in ',t1.name,' vs ',t2.name,'=>Winner : ',IfNull(t3.name,'-'),
+                b.BetOn betOn,
+                concat('From Bet ',b.amount, ' on ' ,b.BetOn,
+                ' in ',m.Name,'=>Winner : ',IfNull(m.Winner,'-'),
                 '@',ROUND(m.winnerRatio,2)) trans,
                 
                 ROUND(b.amount *(
-                     case when m.winnerTeamId!=0 and m.winnerRatio =0 then 0 
-                     when m.winnerTeamId=b.teamId then (0.9*m.winnerRatio) 
+                     case when m.Winner is not null and m.winnerRatio =0 then 0 
+                     when m.Winner=b.BetOn then (0.9*m.winnerRatio) 
                      else -1 end),2) 
                 amount,
                 'bet' ttype
@@ -51,47 +51,42 @@ export class BetService {
                 + ' order by id desc'
             );
     }
-    async matchesDetails(all : boolean): Promise<any[]> {
+    async matchesDetails(all: boolean): Promise<any[]> {
         var matches = await this.matchRepository.find();
         matches = matches.sort((a, b) => a.date.getTime() - b.date.getTime());
-        if(!all)
-        {
+        if (!all) {
             var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
             var now = new Date(indiaTime);
             now.setDate(now.getDate() - 1);//yesterday
             matches = matches.filter((m) => m.date > now).slice(0, 3);
         }
-       
+
         var bets = await this.betRepository.find();
         var output = [];
         matches.forEach((m) => {
             var betSides = JSON.parse(m.Bets);
-            var team1 = betSides[0];
-            var team2 = betSides[1];
+            var bets2 = betSides.map((b) => { return { name: b, amount: 0.0 }; });
             var matchTransactions = bets.filter((b) => b.matchId == m.id);
-            var t1Total = 0;
             var matchTotal = 0;
-            var t2Total = 0;
             matchTransactions.forEach((t) => {
-                if (t.BetOn == team1) {
-                    t1Total += t.amount;
-                }
-                if (t.BetOn == team2.id) {
-                    t2Total += t.amount;
-                }
                 matchTotal += t.amount;
+                bets2.forEach((b) => {
+                    if (t.BetOn == b.name) {
+                        b.amount += t.amount;
+                    }
+                })
             });
-
+ 
             output.push({
                 id: m.id,
                 description: m.Name,
-                team1: {name:team1},
-                team2: {name: team2},
-                bets: betSides,
+                team1: bets2[0],
+                team2: bets2[1],
+                bets: bets2,
                 venue: m.venue,
                 date: m.date,
-                team1Total: t1Total,
-                team2Total: t2Total,
+                team1Total: bets2[0].amount,
+                team2Total: bets2[1].amount,
                 matchTotal: matchTotal
             });
         })
