@@ -68,12 +68,19 @@ app.controller('matchController', function ($http, $localStorage) {
     }
     mc.saveWinner = function(m)
     {
+        m.winnerTeamId=0;
         $http.post("/match/setWinner", m)
         .then(function (res) {
             mc.fetchMatches();
+
         })
     }
     mc.addMatch = function () {
+        mc.newMatch.Bets=JSON.stringify([mc.newMatch.team1.name,mc.newMatch.team2.name]);
+        mc.newMatch.team1=mc.newMatch.team1.id;
+        mc.newMatch.team2=mc.newMatch.team2.id;
+        mc.newMatch.Winner="";
+        mc.newMatch.Name=mc.newMatch.team1.name + ' Vs '+mc.newMatch.team2.name;
         $http.post("/match/add", mc.newMatch)
             .then(function (res) {
                 mc.matches.push(res.data);
