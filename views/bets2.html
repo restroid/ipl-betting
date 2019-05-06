@@ -23,67 +23,79 @@
             </a>
             <button v-if="!!user" class="btn btn-outline my-2 my-sm-0" v-on:click="signout">Sign Out</button>
         </nav>
-        <span v-if="!!user">Welome back {{user.fullName}}!!</span>
-        <form v-if="!user">
+        <div v-if="busy">
+            <img src="/images/loading.gif" alt="loading...">
 
-            <div class="form-group">
-                <label> Enter your email:</label>
-                <input type="email" class="form-control" v-model="email" />
+        </div>
+        <div v-if="!busy">
+            <div class="card card-body" v-if="!!user">Welome back {{user.fullName}}!!</div>
+            <div v-if="error"><span class="alert alert-danger">{{error}}</span></div>
+            <div v-if="!user" class="card card-body">
+                <form>
+
+                    <div class="form-group">
+                        <label> Enter your email:</label>
+                        <input type="email" class="form-control" v-model="email" />
+                    </div>
+                    <button type="button" class="btn btn-primary mb-2 float-right" v-bind:disabled="busy"
+                        v-on:click="loginUser">Login</button>
+                </form>
             </div>
-            <button type="button" class="btn btn-primary mb-2 float-right" v-bind:disabled="busy"
-                v-on:click="loginUser">Login</button>
-        </form>
-        <div v-if="!!user">
 
-            <div class="card card-body" v-if="!!selectedMatch">
-                <h5 class="card-title">{{selectedMatch.description}}</h5>
-                <h6 class="card-subtitle text-muted">{{selectedMatch.venue}}</h6>
-                <p class="card-text text-muted">{{selectedMatch.date | prettyDate}}, {{selectedMatch.date | timeToGo}}
-                </p>
+            <div v-if="!!user">
 
-                <div class="row">
-                    <div class="col m-2" v-for="bet in selectedMatch.bets">
-                        <div v-on:click="selectedTeam=bet" class="border rounded p-3 bg-light"
-                            v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
-                            <h6 class="text-center">{{bet.name}}</h6>
-                            <div class="text-center">{{bet.amount}}</div>
-                            <div class="text-center">{{2.4}}</div>
+                <div class="card card-body" v-if="!!selectedMatch">
+                    <h5 class="card-title">{{selectedMatch.description}}</h5>
+                    <h6 class="card-subtitle text-muted">{{selectedMatch.venue}}</h6>
+                    <p class="card-text text-muted">{{selectedMatch.date | prettyDate}},
+                        {{selectedMatch.date | timeToGo}}
+                    </p>
+
+                    <div class="row">
+                        <div class="col m-2" v-for="bet in selectedMatch.bets">
+                            <div v-on:click="selectedTeam=bet" class="border rounded p-3 bg-light"
+                                v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
+                                <h6 class="text-center">{{bet.name}}</h6>
+                                <div class="text-center">{{bet.amount}}</div>
+                                <div class="text-center">{{2.4}}</div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div v-if="!!selectedTeam" class="text-center p-2">
+                        <button class="m-1" v-on:click="betAmount=amt"
+                            v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
+                            v-for="amt in betAmounts">{{amt}}</button>
+                        <div class="row my-3">
+                            <div class="col-3">&nbsp;</div>
+                            <div class="col-3">
+                                <input class="form-control" type="number" v-model="betAmount" name="betAmount" />
+                            </div>
+                            <div class="col-3 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
                         </div>
 
 
                     </div>
+                    <button type="button" class="btn btn-primary btn-lg mb-2 float-right"
+                        v-on:click="addBet">Confirm</button>
+                    <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
+
                 </div>
-                <div v-if="!!selectedTeam" class="text-center p-2">
-                    <button class="m-1" v-on:click="betAmount=amt"
-                        v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
-                        v-for="amt in betAmounts">{{amt}}</button>
-                    <div class="row my-3">
-                        <div class="col-3">&nbsp;</div>
-                        <div class="col-3">
-                            <input class="form-control" type="number" v-model="betAmount" name="betAmount" />
+                <div>
+                    Other matches:
+                    <div class="card card-body" v-for="m in otherMatches">
+                        <h5 class="card-title">{{m.description}}</h5>
+
+                        <div v-for="b in m.bets">
+                            <span>{{b.name}}</span>
+                            <span>{{b.amount}}</span>
                         </div>
-                        <div class="col-3 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
-                    </div>
-
-
-                </div>
-                <button type="button" class="btn btn-primary btn-lg mb-2 float-right"
-                    v-on:click="addBet">Confirm</button>
-            </div>
-            <div>
-                Other matches:
-                <div class="card card-body" v-for="m in otherMatches">
-                    <h5 class="card-title">{{m.description}}</h5>
-
-                    <div v-for="b in m.bets">
-                        <span>{{b.name}}</span>
-                        <span>{{b.amount}}</span>
                     </div>
                 </div>
+                <all-transactions v-if="false"></all-transactions>
+
             </div>
-            <all-transactions v-if="false"></all-transactions>
-
-
         </div>
     </div>
 </body>
@@ -111,10 +123,10 @@
         },
         filters: {
             prettyDate: function (date) {
-                return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+                return moment(date).format('MMMM Do YYYY, h:mm a');
             },
-            timeToGo: function(date){
-                return moment(date).fromNow();   
+            timeToGo: function (date) {
+                return moment(date).fromNow();
             }
         },
         mounted() {
