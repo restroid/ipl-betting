@@ -99,7 +99,8 @@
             selectedTeam: null,
             betAmount: 0,
             betAmounts: [10, 20, 50, 100],
-            otherMatches: []
+            otherMatches: [],
+            betSuccess: false
         },
         computed: {
             winningAmount: function () { },
@@ -143,6 +144,7 @@
                     && this.betAmount >= 10 && this.betAmount <= 100
             },
             addBet: function () {
+                let that = this;
                 if (this.isBetValid()) {
                     this.busy = true;
                     let newBet = {
@@ -154,10 +156,13 @@
                     axios.post("/bet/add", newBet)
                         .then(function (res) {
                             console.log(res);
-                            // bc.betsuccess = true;
-                            // bc.bets.push(res.data);
-                            // bc.fetchTransactions();
-                        })
+                            that.betSuccess = true;
+                            that.busy = false
+                        }).catch(function (d) {
+                            that.busy = false
+                            console.log(d);
+                            that.error = "Could not place the bet. Please try again";
+                        });
                 }
 
             },
@@ -178,11 +183,11 @@
                         localStorage.accessToken = tokenData.accessToken;
                         localStorage.email = that.email;
                         localStorage.user = JSON.stringify(res.data.user);
-
-
+                        that.busy = false
                     }).catch(function (d) {
                         console.log(d);
-                        this.error = "Email not found! Please contact the bookie!";
+                        that.error = "Email not found! Please contact the bookie!";
+                        that.busy = false
                     });
             }
 
