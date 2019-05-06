@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="/vue-components/bets.component.js"></script>
-
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
 </head>
 
 <body>
@@ -37,13 +37,14 @@
 
             <div class="card card-body" v-if="!!selectedMatch">
                 <h5 class="card-title">{{selectedMatch.description}}</h5>
-                <h6 class="card-subtitle">{{selectedMatch.venue}}</h6>
-                <h6 class="card-subtitle">{{new Date(selectedMatch.date)}}</h6>
+                <h6 class="card-subtitle text-muted">{{selectedMatch.venue}}</h6>
+                <p class="card-text text-muted">{{selectedMatch.date | prettyDate}}, {{selectedMatch.date | timeToGo}}
+                </p>
 
                 <div class="row">
                     <div class="col m-2" v-for="bet in selectedMatch.bets">
-                        <div v-on:click="selectedTeam=bet"
-                            v-bind:class="[bet===selectedTeam ? 'border-primary' : 'border-secondary', 'border', 'rounded', 'p-3','bg-light']">
+                        <div v-on:click="selectedTeam=bet" class="border rounded p-3 bg-light"
+                            v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
                             <h6 class="text-center">{{bet.name}}</h6>
                             <div class="text-center">{{bet.amount}}</div>
                             <div class="text-center">{{2.4}}</div>
@@ -56,7 +57,7 @@
                     <button class="m-1" v-on:click="betAmount=amt"
                         v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
                         v-for="amt in betAmounts">{{amt}}</button>
-                    <div class="row">
+                    <div class="row my-3">
                         <div class="col-3">&nbsp;</div>
                         <div class="col-3">
                             <input class="form-control" type="number" v-model="betAmount" name="betAmount" />
@@ -66,7 +67,8 @@
 
 
                 </div>
-                <button type="button" class="btn btn-primary mb-2 float-right" v-on:click="addBet">Confirm</button>
+                <button type="button" class="btn btn-primary btn-lg mb-2 float-right"
+                    v-on:click="addBet">Confirm</button>
             </div>
             <div>
                 Other matches:
@@ -79,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            <all-transactions v-if="true"></all-transactions>
+            <all-transactions v-if="false"></all-transactions>
 
 
         </div>
@@ -106,6 +108,14 @@
             winningAmount: function () { },
 
 
+        },
+        filters: {
+            prettyDate: function (date) {
+                return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+            },
+            timeToGo: function(date){
+                return moment(date).fromNow();   
+            }
         },
         mounted() {
             if (localStorage.accessToken) {
