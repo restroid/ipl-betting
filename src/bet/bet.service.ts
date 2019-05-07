@@ -92,7 +92,7 @@ export class BetService {
         var output = [];
         matches.forEach((m) => {
             var betSides = JSON.parse(m.Bets);
-            var bets2 = betSides.map((b) => { return { name: b, amount: 0.0 }; });
+            var bets2 = betSides.map((b) => { return { name: b, amount: 0.0, ratio: 0.0 }; });
             var matchTransactions = bets.filter((b) => b.matchId == m.id);
             var matchTotal = 0;
             matchTransactions.forEach((t) => {
@@ -103,6 +103,9 @@ export class BetService {
                     }
                 })
             });
+            bets2.forEach((b) => {
+                b.ratio = (matchTotal - b.ratio / b.ratio).toFixed(2);
+            })
 
             output.push({
                 id: m.id,
