@@ -58,8 +58,8 @@ Vue.component('my-bets', {
                 v-bind:class="{'table-success': t.amount>0, 'table-danger': (t.amount<0 && t.winnerRatio >0), 'table-warning': t.winnerRatio==0}">
                 <td class="font-weight-bold">{{t.amount}}</td>
                 <td>{{t.matchName}}</td>
-                <td>{{t.betAmount}}@{{t.betOn}}</td>
-                <td>{{t.winner}}<span ng-if="t.winner !='-'">@{{t.winnerRatio}}</span></td>
+                <td>{{t.betAmount}} @{{t.betOn}}</td>
+                <td>{{t.winner}}<span ng-if="t.winner !='-'"> @{{t.winnerRatio}}</span></td>
     
             </tr>
         </table>
