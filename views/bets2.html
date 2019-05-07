@@ -74,13 +74,10 @@
                             </div>
                             <div class="col-3 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
                         </div>
-
-
+                        <button type="button" class="btn btn-primary btn-lg mb-2 float-right"
+                            v-on:click="addBet">Confirm</button>
+                        <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
                     </div>
-                    <button type="button" class="btn btn-primary btn-lg mb-2 float-right"
-                        v-on:click="addBet">Confirm</button>
-                    <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
-
                 </div>
                 <div>
                     Other matches:
@@ -90,11 +87,11 @@
                         <div v-for="b in m.bets">
                             <span>{{b.name}}</span>
                             <span>{{b.amount}}</span>
+                            <span>{{b.ratio}}</span>
                         </div>
                     </div>
                 </div>
-                <all-transactions v-if="false"></all-transactions>
-
+                <all-transactions v-if="true"></all-transactions>
             </div>
         </div>
     </div>
@@ -157,7 +154,6 @@
                         let now = new Date();
                         that.selectedMatch =
                             that.matches.find(m => new Date(m.date) > now);
-
                         that.otherMatches = that.matches.filter(m => new Date(m.date) <= now);
                     });
             },
@@ -178,7 +174,7 @@
                     axios.post("/bet/add", newBet)
                         .then(function (res) {
                             console.log(res);
-                            that.betSuccess = true;
+                            that.betSuccess = 'Bet Placed successfully!';
                             that.busy = false
                         }).catch(function (d) {
                             that.busy = false
