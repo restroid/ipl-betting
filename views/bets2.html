@@ -75,8 +75,8 @@
                             <div class="col-4 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
                         </div>
                     </div>
-                    <button v-if="isBetValid()" type="button"
-                        class="btn btn-primary btn-lg mb-2 float-right" v-on:click="addBet">Confirm</button>
+                    <button v-if="isBetValid()" type="button" class="btn btn-primary btn-lg mb-2 float-right"
+                        v-on:click="addBet">Confirm</button>
                     <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
                 </div>
                 <div>
@@ -109,7 +109,7 @@
             selectedMatch: null,
             selectedTeam: null,
             betAmount: 0,
-            betAmounts: [10, 20, 50, 100],
+            betAmounts: [50, 80, 100],
             otherMatches: [],
             betSuccess: false
         },
@@ -201,10 +201,10 @@
                         localStorage.accessToken = tokenData.accessToken;
                         localStorage.email = that.email;
                         localStorage.user = JSON.stringify(res.data.user);
-                        localStorage['ngStorage-userToken']=JSON.stringify(tokenData);
+                        localStorage['ngStorage-userToken'] = JSON.stringify(tokenData);
                         that.busy = false;
                         that.error = null;
-                    this.fetchMatches();
+                        this.fetchMatches();
                     }).catch(function (d) {
                         console.log(d);
                         that.error = "Email not found! Please contact the bookie!";
