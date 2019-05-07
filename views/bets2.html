@@ -201,6 +201,7 @@
                         localStorage.accessToken = tokenData.accessToken;
                         localStorage.email = that.email;
                         localStorage.user = JSON.stringify(res.data.user);
+                        localStorage['ngStorage-userToken']=JSON.stringify(tokenData);
                         that.busy = false;
                         that.error = null;
                     this.fetchMatches();
