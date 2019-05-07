@@ -70,10 +70,6 @@ export class BetService {
                 'bet' ttype
                  from bet b  
                 join \`match\` m on b.matchId=m.id
-                join team t1 on t1.id=m.team1
-                join team t2 on t2.id=m.team2          
-                join team t on t.id=b.teamId
-                left outer join team t3 on t3.id=m.winnerTeamId
             where b.userId=`+ userId
                 + ' order by id desc'
             );
@@ -104,7 +100,11 @@ export class BetService {
                 })
             });
             bets2.forEach((b) => {
-                b.ratio = ((matchTotal - b.amount) / b.amount).toFixed(2);
+                if (b.amount == 0 || matchTotal == b.amount) {
+                    b.ratio = 0;
+                } else {
+                    b.ratio = ((matchTotal - b.amount) / b.amount).toFixed(2);
+                }
             })
 
             output.push({
