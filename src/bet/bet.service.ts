@@ -104,7 +104,7 @@ export class BetService {
                 })
             });
             bets2.forEach((b) => {
-                b.ratio = (matchTotal - b.ratio / b.ratio).toFixed(2);
+                b.ratio = ((matchTotal - b.amount) / b.amount).toFixed(2);
             })
 
             output.push({
