@@ -3,8 +3,8 @@ app.controller('teamController', function ($http, $localStorage) {
     var tc = this;
     tc.teams = [];
     tc.newTeam = {};
-    if ($localStorage.userToken) {
-        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    if ($localStorage.accessToken) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.accessToken;
     }
 
     tc.fetchTeams = function () {
@@ -25,8 +25,8 @@ app.controller('userController', function ($http, $localStorage) {
     var uc = this;
     uc.users = [];
     uc.newUser = {};
-    if ($localStorage.userToken) {
-        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    if ($localStorage.accessToken) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.accessToken;
     }
 
     uc.fetchUsers = function () {
@@ -49,8 +49,8 @@ app.controller('matchController', function ($http, $localStorage) {
     mc.matches = [];
     mc.newMatch = {};
     mc.teams = [];
-    if ($localStorage.userToken) {
-        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    if ($localStorage.accessTokenv) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.accessToken;
     }
 
     mc.fetchTeams = function () {
@@ -93,8 +93,8 @@ app.controller('transactionController', function ($http, $localStorage) {
     tcc.transactions = [];
     tcc.newTransaction = {};
     tcc.users = [];
-    if ($localStorage.userToken) {
-        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.userToken.accessToken;
+    if ($localStorage.accessToken) {
+        $http.defaults.headers.common['Authorization'] = 'Bearer ' + $localStorage.accessToken;
     }
 
     tcc.fetchUsers = function () {
