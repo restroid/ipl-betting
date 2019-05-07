@@ -68,11 +68,11 @@
                             v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
                             v-for="amt in betAmounts">{{amt}}</button>
                         <div class="row my-3">
-                            <div class="col-3">&nbsp;</div>
-                            <div class="col-3">
+                            <div class="col-2">&nbsp;</div>
+                            <div class="col-4">
                                 <input class="form-control" type="number" v-model="betAmount" name="betAmount" />
                             </div>
-                            <div class="col-3 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
+                            <div class="col-4 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
                         </div>
                     </div>
                     <button v-if="isBetValid()" type="button"
