@@ -56,8 +56,8 @@
                             <div v-on:click="selectedTeam=bet" class="border rounded p-3 bg-light"
                                 v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
                                 <h6 class="text-center">{{bet.name}}</h6>
-                                <div class="text-center">{{bet.amount}}</div>
-                                <div class="text-center">@{{bet.ratio}}</div>
+                                <div class="text-center">{{bet.amount + ((selectedTeam && bet.name == selectedTeam.name)?+betAmount:0)}}</div>
+                                <div class="text-center">@{{getLiveRatio(bet)}}</div>
                             </div>
 
 
@@ -84,7 +84,7 @@
                     <div class="card card-body mb-1" v-for="m in otherMatches">
                         <h5 class="card-title">{{m.description}}</h5>
 
-                        <div v-for="b in m.bets">   
+                        <div v-for="b in m.bets">
                             <span>{{b.name}}</span>
                             <span>{{b.amount}}</span>
                             <span>@{{b.ratio}}</span>
@@ -144,6 +144,14 @@
                         this.loginUser();
                     }
                 }
+            },
+            getLiveRatio: function (bet) {
+                var match =this.selectedMatch;
+                let total = match.matchTotal + +this.betAmount;
+                if (this.selectedTeam && bet.name == this.selectedTeam.name) {
+                    return ((total - bet.amount - +this.betAmount) / (+this.betAmount + bet.amount)).toFixed(2);
+                }
+                return ((total - bet.amount) / bet.amount).toFixed(2);
             },
             signout: function () {
                 localStorage.clear()
