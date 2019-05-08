@@ -177,7 +177,7 @@
                         let now = new Date();
                         that.selectedMatch =
                             that.matches.find(m => new Date(m.date) > now);
-                        that.otherMatches = that.matches.filter(m => new Date(m.date) <= now);
+                        that.otherMatches = that.matches.filter(m => new Date(m.date) <= now).reverse();
                         that.busy = false;
                     }).catch(function () {
                         that.busy = false;
