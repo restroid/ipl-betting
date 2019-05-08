@@ -23,14 +23,14 @@
             </a>
             <button v-if="!!user" class="btn btn-outline my-2 my-sm-0" v-on:click="signout">Sign Out</button>
         </nav>
-        <div v-if="busy">
+        <div v-if="busy" class="text-center">
             <img src="/images/loading.gif" alt="loading...">
 
         </div>
         <div v-if="!busy">
-            <div class="card card-body" v-if="!!user">Welome back {{user.fullName}}!!</div>
-            <div v-if="error"><span class="alert alert-danger">{{error}}</span></div>
-            <div v-if="!user" class="card card-body">
+            <div v-if="error" class="alert alert-danger">{{error}}</div>
+            <div class="card card-body mb-2" v-if="!!user">Welome back {{user.fullName}}!!</div>
+            <div v-if="!user" class="card card-body mb-2">
                 <form>
 
                     <div class="form-group">
@@ -44,7 +44,7 @@
 
             <div v-if="!!user">
 
-                <div class="card card-body" v-if="!!selectedMatch">
+                <div class="card card-body mb-4" v-if="!!selectedMatch">
                     <h5 class="card-title">{{selectedMatch.description}}</h5>
                     <h6 class="card-subtitle text-muted">{{selectedMatch.venue}}</h6>
                     <p class="card-text text-muted">{{selectedMatch.date | prettyDate}},
@@ -80,14 +80,15 @@
                     <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
                 </div>
                 <div>
-                    Other matches:
-                    <div class="card card-body" v-for="m in otherMatches">
+                    <div class="mb-2">Older matches:</div>
+                    <div class="card card-body mb-1" v-for="m in otherMatches">
                         <h5 class="card-title">{{m.description}}</h5>
 
-                        <div v-for="b in m.bets">
+                        <div v-for="b in m.bets">   
                             <span>{{b.name}}</span>
                             <span>{{b.amount}}</span>
                             <span>@{{b.ratio}}</span>
+                            <img height="24" src="/images/winner.png" v-if="b.name==m.Winner">
                         </div>
                     </div>
                 </div>
@@ -127,27 +128,30 @@
             }
         },
         mounted() {
-            if (localStorage.accessToken) {
-                if (new Date(localStorage.token_expiry) > new Date()) {
-                    //valid session
-                    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.accessToken;
-                    this.user = JSON.parse(localStorage.user)
-                    this.fetchMatches()
-                }
-                else if (localStorage.email) {
-                    this.email = localStorage.email;
-                    this.loginUser();
-                }
-            }
+            this.initialize();
         },
         methods: {
-
+            initialize: function () {
+                if (localStorage.accessToken) {
+                    if (new Date(localStorage.token_expiry) > new Date()) {
+                        //valid session
+                        axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.accessToken;
+                        this.user = JSON.parse(localStorage.user)
+                        this.fetchMatches()
+                    }
+                    else if (localStorage.email) {
+                        this.email = localStorage.email;
+                        this.loginUser();
+                    }
+                }
+            },
             signout: function () {
                 localStorage.clear()
                 this.user = null;
             },
             fetchMatches: function () {
                 let that = this;
+                this.busy = true;
                 axios.get("/bet/matches")
                     .then(function (res) {
                         that.matches = res.data;
@@ -155,6 +159,9 @@
                         that.selectedMatch =
                             that.matches.find(m => new Date(m.date) > now);
                         that.otherMatches = that.matches.filter(m => new Date(m.date) <= now);
+                        that.busy = false;
+                    }).catch(function () {
+                        that.busy = false;
                     });
             },
             isBetValid: function () {
@@ -187,6 +194,7 @@
             loginUser: function () {
                 console.log(this.email);
                 this.error = null;
+                this.busy = true;
                 let that = this;
                 axios.get("/auth/token/" + this.email)
                     .then(function (res) {
@@ -204,7 +212,7 @@
                         localStorage['ngStorage-userToken'] = JSON.stringify(tokenData);
                         that.busy = false;
                         that.error = null;
-                        this.fetchMatches();
+                        that.initialize();
                     }).catch(function (d) {
                         console.log(d);
                         that.error = "Email not found! Please contact the bookie!";

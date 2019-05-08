@@ -81,7 +81,7 @@ export class BetService {
             var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
             var now = new Date(indiaTime);
             now.setDate(now.getDate() - 2);//yesterday
-            matches = matches.filter((m) => m.date > now).slice(0, 5);
+            matches = matches.filter((m) => m.date > now).slice(0, 5).reverse();
         }
 
         var bets = await this.betRepository.find();
