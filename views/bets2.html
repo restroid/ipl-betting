@@ -29,7 +29,14 @@
         </div>
         <div v-if="!busy">
             <div v-if="error" class="alert alert-danger">{{error}}</div>
-            <div class="card card-body mb-2" v-if="!!user">Welome back {{user.fullName}}!!</div>
+            <div class="card card-body mb-2" v-if="!!user">
+
+                <div>Welome back {{user.fullName}}!!
+                    <button v-if="!!betScreen" @click="betScreen=false"
+                        class="btn btn-primary btn-small float-right">Hisab &gt;</button>
+                    <button v-if="!betScreen" @click="betScreen=true" class="btn btn-warning btn-small float-right">
+                        &lt; Bet</button> </div>
+            </div>
             <div v-if="!user" class="card card-body mb-2">
                 <form>
 
@@ -43,56 +50,59 @@
             </div>
 
             <div v-if="!!user">
+                <div v-if="betScreen">
+                    <div class="card card-body mb-4" v-if="!!selectedMatch">
+                        <h5 class="card-title">{{selectedMatch.description}}</h5>
+                        <h6 class="card-subtitle text-muted">{{selectedMatch.venue}}</h6>
+                        <p class="card-text text-muted">{{selectedMatch.date | prettyDate}},
+                            {{selectedMatch.date | timeToGo}}
+                        </p>
 
-                <div class="card card-body mb-4" v-if="!!selectedMatch">
-                    <h5 class="card-title">{{selectedMatch.description}}</h5>
-                    <h6 class="card-subtitle text-muted">{{selectedMatch.venue}}</h6>
-                    <p class="card-text text-muted">{{selectedMatch.date | prettyDate}},
-                        {{selectedMatch.date | timeToGo}}
-                    </p>
+                        <div class="row">
+                            <div class="col m-2" v-for="bet in selectedMatch.bets">
+                                <div v-on:click="selectedTeam=bet" class="border rounded p-3 bg-light"
+                                    v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
+                                    <h6 class="text-center">{{bet.name}}</h6>
+                                    <div class="text-center">
+                                        {{bet.amount + ((selectedTeam && bet.name == selectedTeam.name)?+betAmount:0)}}
+                                    </div>
+                                    <div class="text-center">@{{getLiveRatio(bet)}}</div>
+                                </div>
 
-                    <div class="row">
-                        <div class="col m-2" v-for="bet in selectedMatch.bets">
-                            <div v-on:click="selectedTeam=bet" class="border rounded p-3 bg-light"
-                                v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
-                                <h6 class="text-center">{{bet.name}}</h6>
-                                <div class="text-center">{{bet.amount + ((selectedTeam && bet.name == selectedTeam.name)?+betAmount:0)}}</div>
-                                <div class="text-center">@{{getLiveRatio(bet)}}</div>
+
                             </div>
-
-
                         </div>
-                    </div>
-                    <div v-if="!!selectedTeam" class="text-center p-2">
-                        <button class="m-1" v-on:click="betAmount=amt"
-                            v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
-                            v-for="amt in betAmounts">{{amt}}</button>
-                        <div class="row my-3">
-                            <div class="col-2">&nbsp;</div>
-                            <div class="col-4">
-                                <input class="form-control" type="number" v-model="betAmount" name="betAmount" />
+                        <div v-if="!!selectedTeam" class="text-center p-2">
+                            <button class="m-1" v-on:click="betAmount=amt"
+                                v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
+                                v-for="amt in betAmounts">{{amt}}</button>
+                            <div class="row my-3">
+                                <div class="col-2">&nbsp;</div>
+                                <div class="col-4">
+                                    <input class="form-control" type="number" v-model="betAmount" name="betAmount" />
+                                </div>
+                                <div class="col-4 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
                             </div>
-                            <div class="col-4 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
                         </div>
+                        <button v-if="isBetValid()" type="button" class="btn btn-primary btn-lg mb-2 float-right"
+                            v-on:click="addBet">Confirm</button>
+                        <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
                     </div>
-                    <button v-if="isBetValid()" type="button" class="btn btn-primary btn-lg mb-2 float-right"
-                        v-on:click="addBet">Confirm</button>
-                    <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
-                </div>
-                <div>
-                    <div class="mb-2">Older matches:</div>
-                    <div class="card card-body mb-1" v-for="m in otherMatches">
-                        <h5 class="card-title">{{m.description}}</h5>
+                    <div>
+                        <div class="mb-2">Older matches:</div>
+                        <div class="card card-body mb-1" v-for="m in otherMatches">
+                            <h5 class="card-title">{{m.description}}</h5>
 
-                        <div v-for="b in m.bets">
-                            <span>{{b.name}}</span>
-                            <span>{{b.amount}}</span>
-                            <span>@{{b.ratio}}</span>
-                            <img height="24" src="/images/winner.png" v-if="b.name==m.Winner">
+                            <div v-for="b in m.bets">
+                                <span>{{b.name}}</span>
+                                <span>{{b.amount}}</span>
+                                <span>@{{b.ratio}}</span>
+                                <img height="24" src="/images/winner.png" v-if="b.name==m.Winner">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <all-transactions v-if="true"></all-transactions>
+                <all-transactions v-if="!betScreen"></all-transactions>
             </div>
         </div>
     </div>
@@ -112,7 +122,8 @@
             betAmount: 0,
             betAmounts: [50, 80, 100],
             otherMatches: [],
-            betSuccess: false
+            betSuccess: false,
+            betScreen: true
         },
         computed: {
             winningAmount: function () { },
@@ -146,7 +157,7 @@
                 }
             },
             getLiveRatio: function (bet) {
-                var match =this.selectedMatch;
+                var match = this.selectedMatch;
                 let total = match.matchTotal + +this.betAmount;
                 if (this.selectedTeam && bet.name == this.selectedTeam.name) {
                     return ((total - bet.amount - +this.betAmount) / (+this.betAmount + bet.amount)).toFixed(2);
