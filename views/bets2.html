@@ -84,7 +84,7 @@
                                 <div class="col-4 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
                             </div>
                         </div>
-                        <button v-if="isBetValid()" type="button" class="btn btn-primary btn-lg mb-2 float-right"
+                        <button v-if="isBetValid() && !betSuccess" type="button" class="btn btn-primary btn-lg mb-2 float-right"
                             v-on:click="addBet">Confirm</button>
                         <div v-if="betSuccess"><span class="alert alert-success">{{betSuccess}}</span></div>
                     </div>
