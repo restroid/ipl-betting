@@ -13,7 +13,7 @@ export class TransactionService {
 
     async findAll(): Promise<any[]> {
         return await this.transactionRepository
-            .query(`select t.id,t.amount,t.date,u.name,t.mode,t.remark from transaction t 
+            .query(`select t.id,t.amount,t.date,u.name,t.mode,t.remark,t.SeriesName from transaction t 
             join user u on t.userId=u.id
             where t.userId=userId`);
     }

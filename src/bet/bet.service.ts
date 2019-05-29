@@ -4,6 +4,7 @@ import { Bet } from './bet.entity';
 import { Repository } from 'typeorm';
 import { Team } from '../team/team.entity';
 import { Match } from '../match/match.entity';
+import { MatchService } from 'src/match/match.service';
 
 @Injectable()
 export class BetService {
@@ -51,8 +52,19 @@ export class BetService {
                 t.amount betAmount ,
                 t.remark betOn,
             t.remark trans,t.amount , 'trans' ttype
-                from transaction t where t.userId=` + userId + ` 
-            union
+                from transaction t where t.SeriesName='`+ MatchService.currentSeries+ `' and t.userId=` + userId + `
+                
+                union
+                select 0 id,       
+            t.SeriesName SeriesName,
+                'fake' winner,
+                0.0 winnerRatio,
+                sum(t.amount) betAmount ,
+                'balance' betOn,
+            'balance' trans,sum(t.amount) , 'trans' ttype
+                from transaction t where  t.SeriesName!='`+ MatchService.currentSeries+ `' and t.userId=` + userId + `
+                group by SeriesName
+                union
                 select b.id id, m.Name matchName ,
                 IfNull(m.Winner,'-') winner,
                 ROUND(m.winnerRatio,2) winnerRatio,
@@ -70,12 +82,31 @@ export class BetService {
                 'bet' ttype
                  from bet b  
                 join \`match\` m on b.matchId=m.id
-            where b.userId=`+ userId
-                + ' order by id desc'
+            where  m.SeriesName='`+ MatchService.currentSeries+ `' and b.userId=`+ userId
+              +
+
+            ` union
+                select 10000 id, m.SeriesName matchName ,
+                '-' winner,
+                '-' winnerRatio,
+                sum(b.amount) betAmount ,
+                '-' betOn,
+                '-' trans,
+                
+                ROUND(sum(b.amount *(
+                     case when m.Winner is not null and m.winnerRatio =0 then 0 
+                     when m.Winner=b.BetOn then (0.9*m.winnerRatio) 
+                     else -1 end)) ,2)
+                amount,
+                'bet' ttype
+                 from bet b  
+                join \`match\` m on b.matchId=m.id
+            where  m.SeriesName!='`+ MatchService.currentSeries+ `' and b.userId=`+ userId
+                + ' group by m.SeriesName order by id desc'
             );
     }
     async matchesDetails(all: boolean): Promise<any[]> {
-        var matches = await this.matchRepository.find();
+        var matches = await this.matchRepository.find({SeriesName:MatchService.currentSeries});
         matches = matches.sort((a, b) => a.date.getTime() - b.date.getTime());
         if (!all) {
             var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });

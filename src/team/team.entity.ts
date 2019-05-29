@@ -14,4 +14,7 @@ export class Team {
 
   @Column({ length: 500 })
   fullName: string;
+
+  @Column()
+  SeriesName: string;
 }

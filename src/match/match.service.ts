@@ -6,7 +6,7 @@ import { Bet } from '../bet/bet.entity';
 
 @Injectable()
 export class MatchService {
-
+    public static currentSeries: any = "WC19";
     constructor(
         @InjectRepository(Match)
         private readonly matchRepository: Repository<Match>,
@@ -14,20 +14,19 @@ export class MatchService {
         private readonly betRepository: Repository<Bet>) { }
 
     async findAll(): Promise<Match[]> {
-        return await this.matchRepository.find();
+        return await this.matchRepository.find({ SeriesName: MatchService.currentSeries });
     }
 
     async add(match: Match): Promise<Match> {
         match.id = null;
         match.winnerRatio = 0;
-        match.winnerTeamId = 0;
         match.Winner = "";
+        match.SeriesName = MatchService.currentSeries;
         return await this.matchRepository.save(match);
     }
     async setWinner(match: Match): Promise<Match> {
         //todo: set match ratio
         var matchDb = await this.matchRepository.findOne(match.id);
-        matchDb.winnerTeamId = match.winnerTeamId
         matchDb.Winner = match.Winner
         matchDb.winnerRatio = await this.getRatio(match.id, match.Winner);
 

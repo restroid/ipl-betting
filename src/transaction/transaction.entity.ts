@@ -19,4 +19,7 @@ export class Transaction {
 
   @Column()
   date: Date
+
+  @Column()
+  SeriesName: string;
 }

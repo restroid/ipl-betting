@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Team } from './team.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MatchService } from 'src/match/match.service';
 
 @Injectable()
 export class TeamService {
@@ -10,7 +11,7 @@ export class TeamService {
         private readonly teamRepository: Repository<Team>) { }
 
     async findAll(): Promise<Team[]> {
-        return await this.teamRepository.find();
+        return await this.teamRepository.find({SeriesName:MatchService.currentSeries});
     }
 
     async addTeam(team: Team): Promise<Team> {
