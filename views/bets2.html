@@ -66,7 +66,7 @@
                         </p>
 
                         <div class="row">
-                            <div class="col m-2" v-for="bet in selectedMatch.bets">
+                            <div class="col-6" v-for="bet in selectedMatch.bets">
                                 <div v-on:click="selectedTeam=betSuccess?selectedTeam:bet"
                                     class="border rounded p-3 bg-light"
                                     v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
@@ -94,10 +94,10 @@
                                     v-for="amt in betAmounts">{{amt}}</button>
                             </div>
                             <div class="row my-3">
-                                <div class="col-3">&nbsp;</div>
+                                <div class="col-sm-3 col-2">&nbsp;</div>
 
 
-                                <div class="col-6">
+                                <div class="col-sm-6 col-8">
 
                                     <div class="input-group mb-3">
 
