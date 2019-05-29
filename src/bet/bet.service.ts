@@ -4,7 +4,7 @@ import { Bet } from './bet.entity';
 import { Repository } from 'typeorm';
 import { Team } from '../team/team.entity';
 import { Match } from '../match/match.entity';
-import { MatchService } from 'src/match/match.service';
+import { MatchService } from '../match/match.service';
 
 @Injectable()
 export class BetService {
