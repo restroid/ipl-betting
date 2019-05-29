@@ -15,7 +15,7 @@
     <style>
         caption {
             caption-side: top;
-            padding-bottom:0;
+            padding-bottom: 0;
             font-size: 1.2em;
         }
     </style>
@@ -70,11 +70,18 @@
                                 <div v-on:click="selectedTeam=betSuccess?selectedTeam:bet"
                                     class="border rounded p-3 bg-light"
                                     v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
-                                    <h6 class="text-center">{{bet.name}}</h6>
-                                    <div class="text-center">
-                                        {{bet.amount + ((selectedTeam && bet.name == selectedTeam.name)?+betAmount:0)}}
+                                    <div class="text-center mb-1">
+                                        <img v-bind:src="'/images/teams/' + bet.name +'.png'" />
                                     </div>
-                                    <div class="text-center">@{{getLiveRatio(bet)}}</div>
+                                    <div>
+                                        <h6 class="text-center">{{bet.name}}</h6>
+                                        <div class="text-center">
+                                            {{bet.amount + ((selectedTeam && bet.name == selectedTeam.name)?+betAmount:0)}}
+                                            @{{getLiveRatio(bet)}}
+                                        </div>
+                                        <!-- <div class="text-center"></div> -->
+                                    </div>
+
                                 </div>
 
 
@@ -87,12 +94,24 @@
                                     v-for="amt in betAmounts">{{amt}}</button>
                             </div>
                             <div class="row my-3">
-                                <div class="col-2">&nbsp;</div>
-                                <div class="col-4">
-                                    <input class="form-control" type="number" :disabled="betSuccess" v-model="betAmount"
-                                        name="betAmount" />
+                                <div class="col-3">&nbsp;</div>
+
+
+                                <div class="col-6">
+
+                                    <div class="input-group mb-3">
+
+                                        <input class="form-control" type="number" :disabled="betSuccess"
+                                            v-model="betAmount" name="betAmount" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="basic-addon2">@
+                                                {{selectedTeam.name}}</span>
+                                        </div>
+                                    </div>
+
+
                                 </div>
-                                <div class="col-4 align-middle"><span>@ {{selectedTeam.name}}</span> </div>
+
                             </div>
                         </div>
                         <button v-if="isBetValid() && !betSuccess" type="button"
@@ -133,7 +152,7 @@
             selectedMatch: null,
             selectedTeam: null,
             betAmount: 0,
-            betAmounts: [50, 80, 100],
+            betAmounts: [20, 50, 80, 100],
             otherMatches: [],
             betSuccess: false,
             betScreen: true
