@@ -1,11 +1,13 @@
 
 Vue.component('all-transactions', {
-    
-    data : function(){
+
+    data: function () {
         return {
             transactions: [],
             bets: [],
-            balanceAmount: 0.0
+            balanceAmount: 0.0,
+            series: 'WC19',
+            busy: false
         }
     },
     mounted() {
@@ -15,7 +17,10 @@ Vue.component('all-transactions', {
     methods: {
         fetchTransactions: function () {
             let that = this;
-            axios.get("/bet/myTrans")
+            that.busy = true;
+            axios.get("/bet/myTrans", {
+                params: { seriesName: that.series }
+            })
                 .then(function (res) {
                     console.log(res);
                     let allTransactions = res.data;
@@ -28,26 +33,41 @@ Vue.component('all-transactions', {
                     that.transactions = allTransactions.filter(t => t.ttype === 'trans')
                     that.bets = allTransactions.filter(t => t.ttype === 'bet')
 
-                });
+                }).finally(function () {
+                    that.busy = false;
+                });;
 
         }
     },
-    template: `
+    template: /* html */`
     <div>
-    <h4>Hisaab : <b>&#8377;{{ balanceAmount}}</b>
-            </h4>
-        <my-bets v-bind:bets="bets"></my-bets>
-        <my-transactions v-bind:transactions="transactions"></my-transactions>
+        <h4>Hisaab : <b>&#8377;{{ balanceAmount}}</b></h4>
+            <select class="float-right" name="series" v-model="series" v-on:change="fetchTransactions()">
+                <option selected>WC19</option>
+                <option>IPL19</option>
+                <option>IPL18</option>
+            </select>
+        
+        <div v-if="busy" class="text-center">
+            <img src="/images/loading.gif" alt="loading...">
+    
+        </div>
+        <div v-if="!busy" class="text-center">
+            <my-bets v-bind:bets="bets"></my-bets>
+            <my-transactions v-bind:transactions="transactions"></my-transactions>
+    
+        </div>
+    
     </div>
     `
 })
 Vue.component('my-bets', {
     props: ['bets'],
-    template: `
+    template: /* html */`
     <table class="table table-condensed table-bordered text-center">
-            <thead>
-                <h5>Bets</h5>
-            </thead>
+            <caption>
+                Bets
+            </caption>
             <tr class="thead-dark">
                 <th>Amount</th>
                 <th>Match</th>
@@ -67,11 +87,12 @@ Vue.component('my-bets', {
 })
 Vue.component('my-transactions', {
     props: ['transactions'],
-    template: `
+    template: /* html */`
     <table class="table table-condensed table-bordered">
-                <thead>
-                    <h5>Transactions</h5>
-                </thead>
+               
+                <caption>
+                Transactions
+            </caption>
                 <tr class="thead-dark">
                     <th>Amount</th>
                     <th>Description</th>

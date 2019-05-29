@@ -12,6 +12,13 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="/vue-components/bets.component.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    <style>
+        caption {
+            caption-side: top;
+            padding-bottom:0;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 
 <body>
@@ -60,7 +67,8 @@
 
                         <div class="row">
                             <div class="col m-2" v-for="bet in selectedMatch.bets">
-                                <div v-on:click="selectedTeam=betSuccess?selectedTeam:bet" class="border rounded p-3 bg-light"
+                                <div v-on:click="selectedTeam=betSuccess?selectedTeam:bet"
+                                    class="border rounded p-3 bg-light"
                                     v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
                                     <h6 class="text-center">{{bet.name}}</h6>
                                     <div class="text-center">

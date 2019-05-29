@@ -43,7 +43,8 @@ export class BetService {
         }
     }
 
-    async findForUser(userId: number): Promise<any[]> {
+    async findForUser(userId: number,seriesName :string): Promise<any[]> {
+        seriesName=seriesName!=null?seriesName:MatchService.currentSeries;
         return await this.betRepository
             .query(`select -1*t.id id,       
             t.remark matchName,
@@ -52,7 +53,7 @@ export class BetService {
                 t.amount betAmount ,
                 t.remark betOn,
             t.remark trans,t.amount , 'trans' ttype
-                from transaction t where t.SeriesName='`+ MatchService.currentSeries+ `' and t.userId=` + userId + `
+                from transaction t where t.SeriesName='`+ seriesName+ `' and t.userId=` + userId + `
                 
                 union
                 select 0 id,       
@@ -62,7 +63,7 @@ export class BetService {
                 sum(t.amount) betAmount ,
                 'balance' betOn,
             'balance' trans,sum(t.amount) , 'trans' ttype
-                from transaction t where  t.SeriesName!='`+ MatchService.currentSeries+ `' and t.userId=` + userId + `
+                from transaction t where  t.SeriesName!='`+ seriesName+ `' and t.userId=` + userId + `
                 group by SeriesName
                 union
                 select b.id id, m.Name matchName ,
@@ -82,7 +83,7 @@ export class BetService {
                 'bet' ttype
                  from bet b  
                 join \`match\` m on b.matchId=m.id
-            where  m.SeriesName='`+ MatchService.currentSeries+ `' and b.userId=`+ userId
+            where  m.SeriesName='`+ seriesName+ `' and b.userId=`+ userId
               +
 
             ` union
@@ -101,7 +102,7 @@ export class BetService {
                 'bet' ttype
                  from bet b  
                 join \`match\` m on b.matchId=m.id
-            where  m.SeriesName!='`+ MatchService.currentSeries+ `' and b.userId=`+ userId
+            where  m.SeriesName!='`+ seriesName+ `' and b.userId=`+ userId
                 + ' group by m.SeriesName order by id desc'
             );
     }
