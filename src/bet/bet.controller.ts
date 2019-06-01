@@ -6,10 +6,10 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @Controller('bet')
-@UseGuards(AuthGuard(),RolesGuard)
+@UseGuards(AuthGuard(), RolesGuard)
 export class BetController {
     constructor(private readonly betService: BetService) { }
-   
+
     @Get('matches')
     @Roles('Member')
     async getAllMatches(): Promise<any[]> {
@@ -22,21 +22,23 @@ export class BetController {
     }
     @Post('add')
     @Roles('Member')
-    async create(@Body() bet: Bet,@Req() req) {
-        bet.userId=req.user.id;
+    async create(@Body() bet: Bet, @Req() req) {
+        bet.userId = req.user.id;
         return this.betService.add(bet);
     }
-    @Get('myTrans')
-    @Roles('Member')
-    async myTransactions(@Query('seriesName')seriesName:string,@Req() req:any):Promise<any[]>{
-        //console.log(seriesName);
-        return await this.betService.findForUser(req.user.id,seriesName);
+
+     
+        @Get('myAmount')
+    @Roles('Member')  
+    async myAmount( @Req() req):Promise<any>{
+        return await this.betService.balanceForUser(req.user.id);
     }
 
-        @Get('myAmount')
+    @Get('myTrans')
     @Roles('Member')
-    async myAmount( @Req() req):Promise<any[]>{
-        return await this.betService.balanceForUser(req.user.id);
+    async myTransactions(@Query('seriesName') seriesName: string, @Req() req: any): Promise<any[]> {
+        //console.log(seriesName);
+        return await this.betService.findForUser(req.user.id, seriesName);
     }
 
 }

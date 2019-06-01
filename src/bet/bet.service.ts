@@ -29,10 +29,6 @@ export class BetService {
                     amount
                      from bet b  
                     join \`match\` m on b.matchId=m.id
-                    join team t1 on t1.id=m.team1
-                    join team t2 on t2.id=m.team2          
-                    join team t on t.id=b.teamId
-                    left outer join team t3 on t3.id=m.winnerTeamId
                 where b.userId=`+ userId + ') c'
             );
 

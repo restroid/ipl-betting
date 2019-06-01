@@ -38,7 +38,7 @@
             <div v-if="error" class="alert alert-danger">{{error}}</div>
             <div class="card card-body mb-2" v-if="!!user">
 
-                <div>Welome back {{user.fullName}}!!
+                <div>Welome back {{user.fullName}} (₹{{balance}})!!
                     <button v-if="!!betScreen" @click="betScreen=false"
                         class="btn btn-primary btn-small float-right">Hisab &gt;</button>
                     <button v-if="!betScreen" @click="betScreen=true" class="btn btn-warning btn-small float-right">
@@ -114,10 +114,14 @@
 
                             </div>
                         </div>
-                        <button v-if="isBetValid() && !betSuccess" type="button"
+                        <button v-if="isBetValid() && !betSuccess && bettingAllowed" type="button"
                             class="btn btn-primary btn-lg mb-2 float-right" v-on:click="addBet">Confirm</button>
                         <div v-if="betSuccess" class="text-center"><span
                                 class="alert alert-success">{{betSuccess}}</span>
+                        </div>
+                        <div v-if="!bettingAllowed" class="text-center"><span class="alert alert-danger">
+                            Balance <b>(₹{{balance}})</b> &lt; -200
+                            Please Pay to Continue</span>
                         </div>
                     </div>
                     <div>
@@ -155,10 +159,13 @@
             betAmounts: [20, 50, 80, 100],
             otherMatches: [],
             betSuccess: false,
-            betScreen: true
+            betScreen: true,
+            balance: 0,
         },
         computed: {
-            winningAmount: function () { },
+            bettingAllowed: function () {
+                return this.balance > -200;
+            },
 
 
         },
@@ -181,6 +188,7 @@
                         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.accessToken;
                         this.user = JSON.parse(localStorage.user)
                         this.fetchMatches()
+                        this.fetchBalance()
                     }
                     else if (localStorage.email) {
                         this.email = localStorage.email;
@@ -199,6 +207,19 @@
             signout: function () {
                 localStorage.clear()
                 this.user = null;
+            },
+            fetchBalance: function () {
+                let that = this;
+                this.busy = true;
+                axios.get("/bet/myAmount")
+                    .then(function (res) {
+                        that.balance = res.data;
+                        that.busy = false;
+                    })
+                    .catch(function () {
+                        that.busy = false;
+                    });
+
             },
             fetchMatches: function () {
                 let that = this;
