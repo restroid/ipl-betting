@@ -22,15 +22,15 @@ export class BetController {
     }
     @Post('add')
     @Roles('Member')
-    async create(@Body() bet: Bet, @Req() req) {
+    async create(@Body() bet: Bet, @Req() req:any) {
         bet.userId = req.user.id;
         return this.betService.add(bet);
     }
 
      
-        @Get('myAmount')
-    @Roles('Member')  
-    async myAmount( @Req() req):Promise<any>{
+    @Get('myAmount')
+    @Roles('Member')
+    async myAmount( @Req() req:any):Promise<any>{
         return await this.betService.balanceForUser(req.user.id);
     }
 
