@@ -77,6 +77,8 @@ app.controller('matchController', function ($http, $localStorage) {
     mc.addMatch = function () {
         mc.newMatch.Bets = JSON.stringify([mc.newMatch.team1.name, mc.newMatch.team2.name,"TIE"]);
         mc.newMatch.Winner = "";
+        mc.newMatch.date=new Date(mc.newMatch.dateOnly.getTime()+mc.newMatch.time.getTime()+(330*60*1000));
+        
         if (!mc.newMatch.Name || mc.newMatch.Name==="")
             mc.newMatch.Name = mc.newMatch.team1.name + ' vs ' + mc.newMatch.team2.name;
         $http.post("/match/add", mc.newMatch)
