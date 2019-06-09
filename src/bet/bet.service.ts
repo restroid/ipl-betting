@@ -23,7 +23,7 @@ export class BetService {
                     from transaction t where t.userId=` + userId + ` 
                 union
                     select sum(b.amount *(
-                         case when m.Winner is not null and m.winnerRatio =0 then 0 
+                         case when m.Winner='Cancelled' then 0 
                          when m.Winner=b.BetOn then (0.9*m.winnerRatio) 
                          else -1 end)) 
                     amount
@@ -72,7 +72,7 @@ export class BetService {
                 '@',ROUND(m.winnerRatio,2)) trans,
                 
                 ROUND(b.amount *(
-                     case when m.Winner is not null and m.winnerRatio =0 then 0 
+                     case when m.winnerRatio =0 or m.Winner='Cancelled'  then 0 
                      when m.Winner=b.BetOn then (0.9*m.winnerRatio) 
                      else -1 end),2) 
                 amount,
