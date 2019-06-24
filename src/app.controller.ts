@@ -15,6 +15,6 @@ export class AppController {
 
   @Get()
     async bet(@Res() res) {
-      res.sendFile(join(__dirname, '..', 'views', "bets.html"));
+      res.sendFile(join(__dirname, '..', 'views', "bets2.html"));
     }
 }

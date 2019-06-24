@@ -15,5 +15,8 @@ export class Bet {
   teamId:number;
 
   @Column()
+  BetOn:string;
+
+  @Column()
   amount: number;
 }

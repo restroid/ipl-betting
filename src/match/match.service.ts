@@ -6,7 +6,7 @@ import { Bet } from '../bet/bet.entity';
 
 @Injectable()
 export class MatchService {
-
+    public static currentSeries: any = "WC19";
     constructor(
         @InjectRepository(Match)
         private readonly matchRepository: Repository<Match>,
@@ -14,47 +14,37 @@ export class MatchService {
         private readonly betRepository: Repository<Bet>) { }
 
     async findAll(): Promise<Match[]> {
-        return await this.matchRepository.find();
+        return await this.matchRepository.find({ SeriesName: MatchService.currentSeries });
     }
 
     async add(match: Match): Promise<Match> {
         match.id = null;
         match.winnerRatio = 0;
-        match.winnerTeamId = 0;
+        match.Winner = "";
+        match.SeriesName = MatchService.currentSeries;
         return await this.matchRepository.save(match);
     }
     async setWinner(match: Match): Promise<Match> {
         //todo: set match ratio
         var matchDb = await this.matchRepository.findOne(match.id);
-        matchDb.winnerTeamId = match.winnerTeamId
-        matchDb.winnerRatio = await this.getRatio(match.id, match.winnerTeamId);
+        matchDb.Winner = match.Winner
+        matchDb.winnerRatio = await this.getRatio(match.id, match.Winner);
 
         return await this.matchRepository.save(matchDb);
     }
-    async getRatio(matchId, teamId): Promise<number> {
+    async getRatio(matchId, teamName): Promise<number> {
         var m = await this.matchRepository.findOne(matchId);
         var bets = await this.betRepository.find();
         var matchTransactions = bets.filter((b) => b.matchId == m.id);
-        var t1Total = 0;
+        var teamTotal = 0;
         var matchTotal = 0;
-        var t2Total = 0;
-
         matchTransactions.forEach((t) => {
-            if (t.teamId == m.team1) {
-                t1Total += t.amount;
-            }
-            if (t.teamId == m.team2) {
-                t2Total += t.amount;
-            }
             matchTotal += t.amount;
+            if (t.BetOn == teamName)
+                teamTotal += t.amount;
         });
-        if (t1Total == 0 || t2Total == 0)
+        if (teamTotal == 0 || teamTotal == matchTotal)
             return 0;
-        if (teamId == m.team1) {
-            return (matchTotal - t1Total) / t1Total;
-        }
-        if (teamId == m.team2) {
-            return (matchTotal - t2Total) / t2Total;
-        }
+        return (matchTotal - teamTotal) / teamTotal;
     }
 }

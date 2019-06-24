@@ -16,7 +16,7 @@ export class AuthService {
       const accessToken = this.jwtService.sign(user);
       return {
         user: userModel,
-        expiresIn: 3600,
+        expiresIn: 3000,
         accessToken,
       };
     }

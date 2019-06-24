@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>App v2</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="/vue-components/bets.component.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    <style>
+        caption {
+            caption-side: top;
+            padding-bottom: 0;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">
+                <img src="/images/IPL8.jpg" width="30" height="30" class="d-inline-block align-top" alt="">
+                Betting chalu hai..
+            </a>
+            <button v-if="!!user" class="btn btn-outline my-2 my-sm-0" v-on:click="signout">Sign Out</button>
+        </nav>
+        <div v-if="busy" class="text-center">
+            <img src="/images/loading.gif" alt="loading...">
+
+        </div>
+        <div v-if="!busy">
+            <div v-if="error" class="alert alert-danger">{{error}}</div>
+            <div class="card card-body mb-2" v-if="!!user">
+
+                <div>Welome back {{user.fullName}} (₹{{balance}})!!
+                    <button v-if="!!betScreen" @click="betScreen=false"
+                        class="btn btn-primary btn-small float-right">Hisab &gt;</button>
+                    <button v-if="!betScreen" @click="betScreen=true" class="btn btn-warning btn-small float-right">
+                        &lt; Bet</button> </div>
+            </div>
+            <div v-if="!user" class="card card-body mb-2">
+                <form>
+
+                    <div class="form-group">
+                        <label> Enter your email:</label>
+                        <input type="email" class="form-control" v-model="email" />
+                    </div>
+                    <button type="button" class="btn btn-primary mb-2 float-right" v-bind:disabled="busy"
+                        v-on:click="loginUser">Login</button>
+                </form>
+            </div>
+
+            <div v-if="!!user">
+                <div v-if="betScreen">
+                    <div class="card card-body mb-4" v-if="!!selectedMatch">
+                        <h5 class="card-title">{{selectedMatch.description}}</h5>
+                        <h6 class="card-subtitle text-muted">{{selectedMatch.venue}}</h6>
+                        <p class="card-text text-muted">{{selectedMatch.date | prettyDate}},
+                            {{selectedMatch.date | timeToGo}}
+                        </p>
+
+                        <div class="row">
+                            <div class="col-6  mb-2" v-for="bet in selectedMatch.bets">
+                                <div v-on:click="selectedTeam=betSuccess?selectedTeam:bet"
+                                    class="border rounded p-3 bg-light"
+                                    v-bind:class="[bet===selectedTeam ? 'border-success' : 'border-secondary']">
+                                    <div class="text-center mb-1">
+                                        <img v-bind:src="'/images/teams/' + bet.name +'.png'" />
+                                    </div>
+                                    <div>
+                                        <h6 class="text-center">{{bet.name}}</h6>
+                                        <div class="text-center">
+                                            {{bet.amount + ((selectedTeam && bet.name == selectedTeam.name)?+betAmount:0)}}
+                                            @{{getLiveRatio(bet)}}
+                                        </div>
+                                        <!-- <div class="text-center"></div> -->
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div v-if="!!selectedTeam" class="text-center p-2">
+                            <div v-if="!betSuccess">
+                                <button class="m-1" v-on:click="betAmount=amt"
+                                    v-bind:class="[amt===betAmount ? 'btn-success' : 'btn-dark', 'btn']"
+                                    v-for="amt in betAmounts">{{amt}}</button>
+                            </div>
+                            <div class="row my-3">
+                                <div class="col-sm-3 col-2">&nbsp;</div>
+
+
+                                <div class="col-sm-6 col-8">
+
+                                    <div class="input-group mb-3">
+
+                                        <input class="form-control" type="number" :disabled="betSuccess"
+                                            v-model="betAmount" name="betAmount" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="basic-addon2">@
+                                                {{selectedTeam.name}}</span>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <button v-if="isBetValid() && !betSuccess && bettingAllowed" type="button"
+                            class="btn btn-primary btn-lg mb-2 float-right" v-on:click="addBet">Confirm</button>
+                        <div v-if="betSuccess" class="text-center"><span
+                                class="alert alert-success">{{betSuccess}}</span>
+                        </div>
+                        <div v-if="!bettingAllowed" class="text-center"><span class="alert alert-danger">
+                            Balance <b>(₹{{balance}})</b> &lt; -200
+                             Pay Up</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2">Older matches:</div>
+                        <div class="card card-body mb-1" v-for="m in otherMatches">
+                            <h5 class="card-title">{{m.description}}</h5>
+
+                            <div v-for="b in m.bets">
+                                <span>{{b.name}}</span>
+                                <span>{{b.amount}}</span>
+                                <span>@{{b.ratio}}</span>
+                                <img height="24" src="/images/winner.png" v-if="b.name==m.Winner">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <all-transactions v-if="!betScreen"></all-transactions>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            user: null,
+            email: null,
+            busy: false,
+            error: null,
+            matches: [],
+
+            selectedMatch: null,
+            selectedTeam: null,
+            betAmount: 0,
+            betAmounts: [20, 50, 80, 100],
+            otherMatches: [],
+            betSuccess: false,
+            betScreen: true,
+            balance: 0,
+        },
+        computed: {
+            bettingAllowed: function () {
+                return this.balance > -200;
+            },
+
+
+        },
+        filters: {
+            prettyDate: function (date) {
+                return moment(date).format('MMMM Do YYYY, h:mm a');
+            },
+            timeToGo: function (date) {
+                return moment(date).fromNow();
+            }
+        },
+        mounted() {
+            this.initialize();
+        },
+        methods: {
+            initialize: function () {
+                if (localStorage.accessToken) {
+                    if (new Date(localStorage.token_expiry) > new Date()) {
+                        //valid session
+                        axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.accessToken;
+                        this.user = JSON.parse(localStorage.user)
+                        this.fetchMatches()
+                        this.fetchBalance()
+                    }
+                    else if (localStorage.email) {
+                        this.email = localStorage.email;
+                        this.loginUser();
+                    }
+                }
+            },
+            getLiveRatio: function (bet) {
+                var match = this.selectedMatch;
+                let total = match.matchTotal + +this.betAmount;
+                if (this.selectedTeam && bet.name == this.selectedTeam.name) {
+                    return ((total - bet.amount - +this.betAmount) / (+this.betAmount + bet.amount)).toFixed(2);
+                }
+                return ((total - bet.amount) / bet.amount).toFixed(2);
+            },
+            signout: function () {
+                localStorage.clear()
+                this.user = null;
+            },
+            fetchBalance: function () {
+                let that = this;
+                this.busy = true;
+                axios.get("/bet/myAmount")
+                    .then(function (res) {
+                        that.balance = res.data;
+                        that.busy = false;
+                    })
+                    .catch(function () {
+                        that.busy = false;
+                    });
+
+            },
+            fetchMatches: function () {
+                let that = this;
+                this.busy = true;
+                axios.get("/bet/matches")
+                    .then(function (res) {
+                        that.matches = res.data;
+                        let now = new Date();
+                        that.selectedMatch =
+                            that.matches.find(m => new Date(m.date) > now);
+                        that.otherMatches = that.matches.filter(m => new Date(m.date) <= now).reverse();
+                        that.busy = false;
+                    }).catch(function () {
+                        that.busy = false;
+                    });
+            },
+            isBetValid: function () {
+                return !!this.selectedMatch && !!this.selectedTeam && !!this.betAmount
+                    && this.betAmount >= 10 && this.betAmount <= 100
+            },
+            addBet: function () {
+                let that = this;
+                if (this.isBetValid()) {
+                    this.busy = true;
+                    let newBet = {
+                        teamId: 0,
+                        matchId: this.selectedMatch.id,
+                        BetOn: this.selectedTeam.name,
+                        amount: this.betAmount
+                    }
+                    axios.post("/bet/add", newBet)
+                        .then(function (res) {
+                            console.log(res);
+                            that.betSuccess = 'Bet Placed successfully!';
+                            that.busy = false
+                        }).catch(function (d) {
+                            that.busy = false
+                            console.log(d);
+                            that.error = "Could not place the bet. Please try again";
+                        });
+                }
+
+            },
+            loginUser: function () {
+                console.log(this.email);
+                this.error = null;
+                this.busy = true;
+                let that = this;
+                axios.get("/auth/token/" + this.email)
+                    .then(function (res) {
+                        console.log(res);
+                        that.user = res.data.user;
+                        var tokenData = res.data;
+
+
+                        var dt = new Date();
+                        dt.setSeconds(dt.getSeconds() + tokenData.expiresIn);
+                        localStorage.token_expiry = dt;
+                        localStorage.accessToken = tokenData.accessToken;
+                        localStorage.email = that.email;
+                        localStorage.user = JSON.stringify(res.data.user);
+                        localStorage['ngStorage-userToken'] = JSON.stringify(tokenData);
+                        that.busy = false;
+                        that.error = null;
+                        that.initialize();
+                    }).catch(function (d) {
+                        console.log(d);
+                        that.error = "Email not found! Please contact the bookie!";
+                        that.busy = false
+                    });
+            }
+
+        },
+    })
+
+</script>
+
+</html>

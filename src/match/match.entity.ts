@@ -4,21 +4,24 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class Match {
   @PrimaryGeneratedColumn()
   id?: number;
+  
+  @Column()
+  Bets: string;
 
   @Column()
-  team1: number;
+  Name: string;
 
   @Column()
-  team2: number;
+  SeriesName: string;
 
+  @Column()
+  Winner: string;
+  
   @Column({ length: 100 })
   venue: string;
 
   @Column()
   date: Date;
-
-  @Column('int')
-  winnerTeamId?: number;
 
   @Column('double')
   winnerRatio?: number = 0;
