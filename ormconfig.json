@@ -1,6 +1,6 @@
 {
   "type": "mysql",
-  "host": "mysql",
+  "host": "restroid.in",
   "port": 3306,
   "username": "scott",
   "password": "tiger",
